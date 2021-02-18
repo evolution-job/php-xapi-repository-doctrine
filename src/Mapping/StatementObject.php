@@ -277,6 +277,7 @@ class StatementObject
         $object = new self();
         $object->mboxSha1Sum = $inverseFunctionalIdentifier->getMboxSha1Sum();
         $object->openId = $inverseFunctionalIdentifier->getOpenId();
+        $object->name = $model->getName();
 
         if (null !== $mbox = $inverseFunctionalIdentifier->getMbox()) {
             $object->mbox = $mbox->getValue();

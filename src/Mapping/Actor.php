@@ -73,6 +73,7 @@ class Actor
         $actor = new self();
         $actor->mboxSha1Sum = $inverseFunctionalIdentifier->getMboxSha1Sum();
         $actor->openId = $inverseFunctionalIdentifier->getOpenId();
+        $actor->name = $model->getName();
 
         if (null !== $mbox = $inverseFunctionalIdentifier->getMbox()) {
             $actor->mbox = $mbox->getValue();
