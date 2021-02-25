@@ -165,7 +165,11 @@ class Context
     {
         $context = new ContextModel();
         $context = $context->withRegistration($this->registration);
-        $context = $context->withRevision($this->revision);
+
+        if (null !== $this->revision) {
+            $context = $context->withRevision($this->revision);
+        }
+
         $context = $context->withPlatform($this->platform);
         $context = $context->withLanguage($this->language);
 
