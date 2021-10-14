@@ -170,8 +170,13 @@ class Context
             $context = $context->withRevision($this->revision);
         }
 
-        $context = $context->withPlatform($this->platform);
-        $context = $context->withLanguage($this->language);
+        if (null !== $this->platform) {
+            $context = $context->withPlatform($this->platform);
+        }
+
+        if (null !== $this->language) {
+            $context = $context->withLanguage($this->language);
+        }
 
         if (null !== $this->instructor) {
             $context = $context->withInstructor($this->instructor->getModel());
