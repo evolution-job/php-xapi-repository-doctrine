@@ -164,7 +164,10 @@ class Context
     public function getModel()
     {
         $context = new ContextModel();
-        $context = $context->withRegistration($this->registration);
+
+        if (null !== $this->registration) {
+            $context = $context->withRegistration($this->registration);
+        }
 
         if (null !== $this->revision) {
             $context = $context->withRevision($this->revision);
