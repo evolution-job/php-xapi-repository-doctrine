@@ -14,6 +14,8 @@ CHANGELOG
 
 * allow `2.x` and `3.x` releases of the `php-xapi/model` package too
 
+* added a new `ActivityRepository` class that implements `ActivityRepositoryInterface`.
+
 0.3.0
 -----
 
