@@ -21,6 +21,10 @@ CHANGELOG
 
 * store and return statement's version
 
+* the created and stored properties of the internal mapping `Statement` class
+  are now instances of PHP's `\DateTime` class instead of integers representing
+  UNIX timestamps.
+
 0.3.0
 -----
 
