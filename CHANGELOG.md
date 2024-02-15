@@ -16,6 +16,11 @@ CHANGELOG
 
 * added a new `ActivityRepository` class that implements `ActivityRepositoryInterface`.
 
+* The required version of the `php-xapi/repository-api` package has been
+  raised to `^0.4`.
+
+* store and return statement's version
+
 0.3.0
 -----
 

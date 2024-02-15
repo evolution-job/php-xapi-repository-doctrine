@@ -76,6 +76,11 @@ class Statement
      */
     public $attachments;
 
+    /**
+     * @var string
+     */
+    public $version;
+
     public static function fromModel(StatementModel $model)
     {
         $statement = new self();
@@ -83,6 +88,7 @@ class Statement
         $statement->actor = StatementObject::fromModel($model->getActor());
         $statement->verb = Verb::fromModel($model->getVerb());
         $statement->object = StatementObject::fromModel($model->getObject());
+        $statement->version = $model->getVersion();
 
         if (null !== $model->getCreated()) {
             $statement->created = $model->getCreated()->getTimestamp();
@@ -163,7 +169,8 @@ class Statement
             $created,
             $stored,
             $context,
-            $attachments
+            $attachments,
+            $this->version
         );
     }
 }

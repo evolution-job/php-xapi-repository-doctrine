@@ -13,7 +13,7 @@
     "require": {
         "php": "^7.1",
         "doctrine/common": "~2.4",
-        "php-xapi/model": "^1.2 || ^2.1 || ^3.0",
+        "php-xapi/model": "^2.1 || ^3.0",
         "php-xapi/repository-api": "^0.4",
         "ramsey/uuid": "^2.9 || ^3.0"
     },
