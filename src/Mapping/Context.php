@@ -164,10 +164,22 @@ class Context
     public function getModel()
     {
         $context = new ContextModel();
-        $context = $context->withRegistration($this->registration);
-        $context = $context->withRevision($this->revision);
-        $context = $context->withPlatform($this->platform);
-        $context = $context->withLanguage($this->language);
+
+        if (null !== $this->registration) {
+            $context = $context->withRegistration($this->registration);
+        }
+
+        if (null !== $this->revision) {
+            $context = $context->withRevision($this->revision);
+        }
+
+        if (null !== $this->platform) {
+            $context = $context->withPlatform($this->platform);
+        }
+
+        if (null !== $this->language) {
+            $context = $context->withLanguage($this->language);
+        }
 
         if (null !== $this->instructor) {
             $context = $context->withInstructor($this->instructor->getModel());
