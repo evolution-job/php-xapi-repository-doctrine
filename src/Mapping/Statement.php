@@ -11,6 +11,8 @@
 
 namespace XApi\Repository\Doctrine\Mapping;
 
+use DateTime;
+use DateTimeZone;
 use Xabbuh\XApi\Model\Statement as StatementModel;
 use Xabbuh\XApi\Model\StatementId;
 
@@ -52,12 +54,12 @@ class Statement
     public $authority;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
     public $created;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
     public $stored;
 
@@ -91,6 +93,7 @@ class Statement
         $statement->version = $model->getVersion();
 
         if (null !== $model->getCreated()) {
+            $model->getCreated()->setTimezone(new DateTimeZone('UTC'));
             $statement->created = $model->getCreated();
         }
 
@@ -108,7 +111,7 @@ class Statement
 
         if (null !== $attachments = $model->getAttachments()) {
             $statement->hasAttachments = true;
-            $statement->attachments = array();
+            $statement->attachments = [];
 
             foreach ($attachments as $attachment) {
                 $mappedAttachment = Attachment::fromModel($attachment);
@@ -152,7 +155,7 @@ class Statement
         }
 
         if ($this->hasAttachments) {
-            $attachments = array();
+            $attachments = [];
 
             foreach ($this->attachments as $attachment) {
                 $attachments[] = $attachment->getModel();

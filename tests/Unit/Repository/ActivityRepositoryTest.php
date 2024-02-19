@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 use Xabbuh\XApi\DataFixtures\ActivityFixtures;
 use Xabbuh\XApi\DataFixtures\ActorFixtures;
 use Xabbuh\XApi\Model\IRI;
-use XApi\Repository\Doctrine\Mapping\Object as MappedObject;
+use XApi\Repository\Doctrine\Mapping\StatementObject;
 use XApi\Repository\Doctrine\Repository\ActivityRepository;
-use XApi\Repository\Doctrine\Storage\ObjectStorage;
+use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
 
 /**
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
@@ -25,7 +25,7 @@ use XApi\Repository\Doctrine\Storage\ObjectStorage;
 class ActivityRepositoryTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|ObjectStorage
+     * @var \PHPUnit_Framework_MockObject_MockObject|StatementObjectStorage
      */
     private $objectStorage;
 
@@ -52,7 +52,7 @@ class ActivityRepositoryTest extends TestCase
                 'type' => 'activity',
                 'activityId' => $activityId->getValue(),
             ))
-            ->will($this->returnValue(MappedObject::fromModel(ActivityFixtures::getIdActivity())));
+            ->will($this->returnValue(StatementObject::fromModel(ActivityFixtures::getIdActivity())));
 
         $this->activityRepository->findActivityById($activityId);
     }
@@ -92,18 +92,18 @@ class ActivityRepositoryTest extends TestCase
                 'type' => 'activity',
                 'activityId' => $activityId->getValue(),
             ))
-            ->will($this->returnValue(MappedObject::fromModel(ActorFixtures::getMboxAgent())));
+            ->will($this->returnValue(StatementObject::fromModel(ActorFixtures::getMboxAgent())));
 
         $this->activityRepository->findActivityById($activityId);
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|ObjectStorage
+     * @return \PHPUnit_Framework_MockObject_MockObject|StatementObjectStorage
      */
     protected function createObjectStorageMock()
     {
         return $this
-            ->getMockBuilder('\XApi\Repository\Doctrine\Storage\ObjectStorage')
+            ->getMockBuilder('\XApi\Repository\Doctrine\Storage\StatementObjectStorage')
             ->getMock();
     }
 }

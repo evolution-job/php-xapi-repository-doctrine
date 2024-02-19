@@ -11,20 +11,20 @@
 
 namespace XApi\Repository\Doctrine\Storage;
 
-use XApi\Repository\Doctrine\Mapping\Object as MappedObject;
+use XApi\Repository\Doctrine\Mapping\StatementObject;
 
 /**
  * {@link Object} repository interface definition.
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
-interface ObjectStorage
+interface StatementObjectStorage
 {
     /**
      * @param array $criteria
      *
-     * @return MappedObject The object or null if no matching object
-     *                      has been found
+     * @return StatementObject The object or null if no matching object
+     *                         has been found
      */
     public function findObject(array $criteria);
 }

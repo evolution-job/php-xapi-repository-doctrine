@@ -15,7 +15,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Xabbuh\XApi\Model\IRI;
 use XApi\Repository\Api\Test\Functional\ActivityRepositoryTest as BaseActivityRepositoryTest;
 use XApi\Repository\Doctrine\Repository\ActivityRepository;
-use XApi\Repository\Doctrine\Storage\ObjectStorage;
+use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
 use XApi\Repository\Doctrine\Test\ActivityRepository as FreshActivityRepository;
 
 /**
@@ -29,7 +29,7 @@ abstract class ActivityRepositoryTest extends BaseActivityRepositoryTest
     protected $objectManager;
 
     /**
-     * @var ObjectStorage
+     * @var StatementObjectStorage
      */
     protected $storage;
 

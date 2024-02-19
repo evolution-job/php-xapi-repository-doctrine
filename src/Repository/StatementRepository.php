@@ -20,7 +20,7 @@ use Xabbuh\XApi\Model\StatementsFilter;
 use Xabbuh\XApi\Model\Uuid as ModelUuid;
 use XApi\Repository\Api\StatementRepositoryInterface;
 use XApi\Repository\Doctrine\Mapping\Statement as MappedStatement;
-use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as MappedStatementRepository;
+use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as BaseStatementRepository;
 
 /**
  * Doctrine based {@link Statement} repository.
@@ -31,7 +31,7 @@ final class StatementRepository implements StatementRepositoryInterface
 {
     private $repository;
 
-    public function __construct(MappedStatementRepository $repository)
+    public function __construct(BaseStatementRepository $repository)
     {
         $this->repository = $repository;
     }
