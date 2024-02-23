@@ -13,13 +13,13 @@
     "require": {
         "php": "^7.1",
         "doctrine/common": "~2.4",
-        "php-xapi/model": "^2.1 || ^3.0",
+        "php-xapi/model": "^3.0",
         "php-xapi/repository-api": "^0.4",
         "ramsey/uuid": "^2.9 || ^3.0"
     },
     "require-dev": {
         "php-xapi/test-fixtures": "^1.0",
-        "symfony/phpunit-bridge": "^3.4 || ^4.0"
+        "symfony/phpunit-bridge": "^4.0"
     },
     "minimum-stability": "dev",
     "conflict": {

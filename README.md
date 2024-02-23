@@ -10,4 +10,5 @@ implementations.
 
 Existing implementations:
 
+* [Doctrine ORM](https://github.com/php-xapi/repository-doctrine-orm/)
 * [MongoDB](https://github.com/php-xapi/repository-mongodb/)
