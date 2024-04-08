@@ -11,56 +11,43 @@
 
 namespace XApi\Repository\Doctrine\Mapping;
 
+use JsonException;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\State as StateModel;
 
 class State
 {
-    /**
-     * @var string
-     */
-    public $activityId;
+    public string $activityId;
 
-    /**
-     * @var StatementObject
-     */
-    public $actor;
+    public StatementObject $actor;
 
-    /**
-     * @var string|null
-     */
-    public $registrationId;
+    public ?string $registrationId = null;
 
-    /**
-     * @var string
-     */
-    public $stateId;
+    public string $stateId;
 
-    /**
-     * @var string
-     */
-    public $data;
+    public string $data;
 
-    /**
-     * @param StateModel $model
-     * @return State
-     */
-    public static function fromModel(StateModel $model)
+    public static function fromModel(StateModel $stateModel): self
     {
         $state = new self();
-        $state->activityId = $model->getActivity()->getId()->getValue();
-        $state->actor = StatementObject::fromModel($model->getAgent());
-        $state->registrationId = $model->getRegistrationId();
-        $state->stateId = $model->getStateId();
-        $state->data = is_array($model->getData()) ? json_encode($model->getData()) : $model->getData();
+
+        $state->activityId = $stateModel->getActivity()->getId()->getValue();
+        $state->actor = StatementObject::fromModel($stateModel->getAgent());
+        $state->registrationId = $stateModel->getRegistrationId();
+        $state->stateId = $stateModel->getStateId();
+
+        try {
+            $state->data = is_array($stateModel->getData()) ? json_encode($stateModel->getData(), JSON_THROW_ON_ERROR) : $stateModel->getData();
+        } catch (JsonException) { }
+
         return $state;
     }
 
     /**
      * @return StateModel
      */
-    public function getModel()
+    public function getModel(): StateModel
     {
         return new StateModel(
             new Activity(IRI::fromString($this->activityId)),

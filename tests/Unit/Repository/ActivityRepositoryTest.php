@@ -11,7 +11,9 @@
 
 namespace XApi\Repository\Doctrine\Tests\Unit\Repository;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Xabbuh\XApi\Common\Exception\NotFoundException;
 use Xabbuh\XApi\DataFixtures\ActivityFixtures;
 use Xabbuh\XApi\DataFixtures\ActorFixtures;
 use Xabbuh\XApi\Model\IRI;
@@ -24,86 +26,64 @@ use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
  */
 class ActivityRepositoryTest extends TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|StatementObjectStorage
-     */
-    private $objectStorage;
+    private MockObject|StatementObjectStorage $objectStorage;
 
-    /**
-     * @var ActivityRepository
-     */
-    private $activityRepository;
+    private ActivityRepository $activityRepository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectStorage = $this->createObjectStorageMock();
         $this->activityRepository = new ActivityRepository($this->objectStorage);
     }
 
-    public function testFindActivityById()
+    public function testFindActivityById(): void
     {
-        $activityId = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
+        $iri = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
 
         $this
             ->objectStorage
             ->expects($this->once())
             ->method('findObject')
-            ->with(array(
-                'type' => 'activity',
-                'activityId' => $activityId->getValue(),
-            ))
-            ->will($this->returnValue(StatementObject::fromModel(ActivityFixtures::getIdActivity())));
+            ->with(['type' => 'activity', 'activityId' => $iri->getValue()])
+            ->willReturn(StatementObject::fromModel(ActivityFixtures::getIdActivity()));
 
-        $this->activityRepository->findActivityById($activityId);
+        $this->activityRepository->findActivityById($iri);
     }
 
-    /**
-     * @expectedException \Xabbuh\XApi\Common\Exception\NotFoundException
-     */
-    public function testNotFoundObject()
+    public function testNotFoundObject(): void
     {
-        $activityId = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
+        $this->expectException(NotFoundException::class);
+        $iri = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
 
         $this
             ->objectStorage
             ->expects($this->once())
             ->method('findObject')
-            ->with(array(
-                'type' => 'activity',
-                'activityId' => $activityId->getValue(),
-            ))
-            ->will($this->returnValue(null));
+            ->with(['type' => 'activity', 'activityId' => $iri->getValue()])
+            ->willReturn(null);
 
-        $this->activityRepository->findActivityById($activityId);
+        $this->activityRepository->findActivityById($iri);
     }
 
-    /**
-     * @expectedException \Xabbuh\XApi\Common\Exception\NotFoundException
-     */
-    public function testObjectIsNotAnActivity()
+    public function testObjectIsNotAnActivity(): void
     {
-        $activityId = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
+        $this->expectException(NotFoundException::class);
+        $iri = IRI::fromString('http://tincanapi.com/conformancetest/activityid');
 
         $this
             ->objectStorage
             ->expects($this->once())
             ->method('findObject')
-            ->with(array(
-                'type' => 'activity',
-                'activityId' => $activityId->getValue(),
-            ))
-            ->will($this->returnValue(StatementObject::fromModel(ActorFixtures::getMboxAgent())));
+            ->with(['type' => 'activity', 'activityId' => $iri->getValue()])
+            ->willReturn(StatementObject::fromModel(ActorFixtures::getMboxAgent()));
 
-        $this->activityRepository->findActivityById($activityId);
+        $this->activityRepository->findActivityById($iri);
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|StatementObjectStorage
-     */
-    protected function createObjectStorageMock()
+    protected function createObjectStorageMock(): MockObject
     {
         return $this
-            ->getMockBuilder('\XApi\Repository\Doctrine\Storage\StatementObjectStorage')
+            ->getMockBuilder(StatementObjectStorage::class)
             ->getMock();
     }
 }

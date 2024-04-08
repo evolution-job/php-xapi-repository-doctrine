@@ -9,30 +9,25 @@
  * file that was distributed with this source code.
  */
 
-namespace XApi\Repository\Doctrine\Test\Functional;
+namespace XApi\Repository\Doctrine\Tests\Functional;
 
 use Doctrine\Persistence\ObjectManager;
-use XApi\Repository\Api\Test\Functional\StatementRepositoryTest as BaseStatementRepositoryTest;
+use Doctrine\Persistence\ObjectRepository;
+use XApi\Repository\Api\Tests\Functional\StatementRepositoryTest as BaseStatementRepositoryTest;
 use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as MappedStatementRepository;
 use XApi\Repository\Doctrine\Repository\StatementRepository;
-use XApi\Repository\Doctrine\Test\StatementRepository as FreshStatementRepository;
+use XApi\Repository\Doctrine\Tests\StatementRepository as FreshStatementRepository;
 
 /**
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
 abstract class StatementRepositoryTest extends BaseStatementRepositoryTest
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    protected ObjectManager $objectManager;
 
-    /**
-     * @var MappedStatementRepository
-     */
-    protected $repository;
+    protected ObjectRepository|MappedStatementRepository $repository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = $this->createObjectManager();
         $this->repository = $this->createRepository();
@@ -40,31 +35,25 @@ abstract class StatementRepositoryTest extends BaseStatementRepositoryTest
         parent::setUp();
     }
 
-    protected function createStatementRepository()
+    protected function createStatementRepository(): FreshStatementRepository
     {
         return new FreshStatementRepository(new StatementRepository($this->repository), $this->objectManager);
     }
 
-    protected function cleanDatabase()
+    protected function cleanDatabase(): void
     {
-        foreach ($this->repository->findStatements(array()) as $statement) {
+        foreach ($this->repository->findStatements([]) as $statement) {
             $this->objectManager->remove($statement);
         }
 
         $this->objectManager->flush();
     }
 
-    /**
-     * @return ObjectManager
-     */
-    abstract protected function createObjectManager();
+    abstract protected function createObjectManager(): ObjectManager;
 
-    /**
-     * @return string
-     */
-    abstract protected function getStatementClassName();
+    abstract protected function getStatementClassName(): string;
 
-    private function createRepository()
+    private function createRepository(): ObjectRepository|MappedStatementRepository
     {
         return $this->objectManager->getRepository($this->getStatementClassName());
     }

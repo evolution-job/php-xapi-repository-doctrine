@@ -21,10 +21,7 @@ use XApi\Repository\Doctrine\Mapping\State;
 interface StateRepository
 {
     /**
-     * @param array $criteria
-     *
-     * @return State The state or null if no matching state
-     *                   has been found
+     * @return State The state or null if no matching state has been found
      */
     public function findState(array $criteria);
 
@@ -32,8 +29,8 @@ interface StateRepository
      * Saves a {@link State} in the underlying storage.
      *
      * @param State $state The state being stored
-     * @param bool $flush     Whether or not to flush the managed objects
-     *                             (i.e. write them to the data storage immediately)
+     * @param bool  $flush Whether or not to flush the managed objects
+     *                     (i.e. write them to the data storage immediately)
      */
-    public function storeState(State $state, $flush = true);
+    public function storeState(State $state, bool $flush = true);
 }

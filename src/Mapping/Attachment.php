@@ -21,79 +21,52 @@ use Xabbuh\XApi\Model\LanguageMap;
  */
 class Attachment
 {
-    public $identifier;
+    public int $identifier;
 
-    public $statement;
+    public ?Statement $statement;
 
-    /**
-     * @var string
-     */
-    public $usageType;
+    public string $usageType;
 
-    /**
-     * @var string
-     */
-    public $contentType;
+    public string $contentType;
 
-    /**
-     * @var int
-     */
-    public $length;
+    public int $length;
 
-    /**
-     * @var string
-     */
-    public $sha2;
+    public string $sha2;
 
-    /**
-     * @var array
-     */
-    public $display;
+    public array $display = [];
 
-    /**
-     * @var bool
-     */
-    public $hasDescription;
+    public bool $hasDescription;
 
-    /**
-     * @var array|null
-     */
-    public $description;
+    public ?array $description = null;
 
-    /**
-     * @var string|null
-     */
-    public $fileUrl;
+    public ?string $fileUrl = null;
 
-    /**
-     * @var string|null
-     */
-    public $content;
+    public ?string $content = null;
 
-    public static function fromModel(AttachmentModel $model)
+    public static function fromModel(AttachmentModel $attachmentModel): self
     {
         $attachment = new self();
-        $attachment->usageType = $model->getUsageType()->getValue();
-        $attachment->contentType = $model->getContentType();
-        $attachment->length = $model->getLength();
-        $attachment->sha2 = $model->getSha2();
-        $attachment->display = array();
+        $attachment->usageType = $attachmentModel->getUsageType()->getValue();
+        $attachment->contentType = $attachmentModel->getContentType();
+        $attachment->length = $attachmentModel->getLength();
+        $attachment->sha2 = $attachmentModel->getSha2();
+        $attachment->display = [];
 
-        if (null !== $model->getFileUrl()) {
-            $attachment->fileUrl = $model->getFileUrl()->getValue();
+        if ($attachmentModel->getFileUrl() instanceof IRL) {
+            $attachment->fileUrl = $attachmentModel->getFileUrl()->getValue();
         }
 
-        $attachment->content = $model->getContent();
+        $attachment->content = $attachmentModel->getContent();
 
-        $display = $model->getDisplay();
+        $display = $attachmentModel->getDisplay();
 
         foreach ($display->languageTags() as $languageTag) {
             $attachment->display[$languageTag] = $display[$languageTag];
         }
 
-        if (null !== $description = $model->getDescription()) {
+        if (($description = $attachmentModel->getDescription()) instanceof LanguageMap) {
             $attachment->hasDescription = true;
-            $attachment->description = array();
+            $attachment->description = [];
 
             foreach ($description->languageTags() as $languageTag) {
                 $attachment->description[$languageTag] = $description[$languageTag];
@@ -105,7 +78,7 @@ class Attachment
         return $attachment;
     }
 
-    public function getModel()
+    public function getModel(): AttachmentModel
     {
         $description = null;
         $fileUrl = null;

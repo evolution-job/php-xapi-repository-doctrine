@@ -19,67 +19,37 @@ use Xabbuh\XApi\Model\Score;
  */
 class Result
 {
-    public $identifier;
+    public int $identifier;
 
-    /**
-     * @var bool
-     */
-    public $hasScore;
+    public bool $hasScore;
 
-    /**
-     * @var float|null
-     */
-    public $scaled;
+    public ?float $scaled = null;
 
-    /**
-     * @var float|null
-     */
-    public $raw;
+    public ?float $raw = null;
 
-    /**
-     * @var float|null
-     */
-    public $min;
+    public ?float $min = null;
 
-    /**
-     * @var float|null
-     */
-    public $max;
+    public ?float $max = null;
 
-    /**
-     * @var bool|null
-     */
-    public $success;
+    public ?bool $success = null;
 
-    /**
-     * @var bool|null
-     */
-    public $completion;
+    public ?bool $completion = null;
 
-    /**
-     * @var string|null
-     */
-    public $response;
+    public ?string $response = null;
 
-    /**
-     * @var string|null
-     */
-    public $duration;
+    public ?string $duration = null;
 
-    /**
-     * @var Extensions|null
-     */
-    public $extensions;
+    public ?Extensions $extensions = null;
 
-    public static function fromModel(ResultModel $model)
+    public static function fromModel(ResultModel $resultModel): self
     {
         $result = new self();
-        $result->success = $model->getSuccess();
-        $result->completion = $model->getCompletion();
-        $result->response = $model->getResponse();
-        $result->duration = $model->getDuration();
+        $result->success = $resultModel->getSuccess();
+        $result->completion = $resultModel->getCompletion();
+        $result->response = $resultModel->getResponse();
+        $result->duration = $resultModel->getDuration();
 
-        if (null !== $score = $model->getScore()) {
+        if (($score = $resultModel->getScore()) instanceof Score) {
             $result->hasScore = true;
             $result->scaled = $score->getScaled();
             $result->raw = $score->getRaw();
@@ -89,24 +59,21 @@ class Result
             $result->hasScore = false;
         }
 
-        if (null !== $extensions = $model->getExtensions()) {
+        if (($extensions = $resultModel->getExtensions()) instanceof \Xabbuh\XApi\Model\Extensions) {
             $result->extensions = Extensions::fromModel($extensions);
         }
 
         return $result;
     }
 
-    public function getModel()
+    public function getModel(): ResultModel
     {
+        $extensions = $this->extensions?->getModel();
+
         $score = null;
-        $extensions = null;
 
         if ($this->hasScore) {
             $score = new Score($this->scaled, $this->raw, $this->min, $this->max);
-        }
-
-        if (null !== $this->extensions) {
-            $extensions = $this->extensions->getModel();
         }
 
         return new ResultModel($score, $this->success, $this->completion, $this->response, $this->duration, $extensions);

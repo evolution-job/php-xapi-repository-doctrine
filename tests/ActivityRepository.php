@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace XApi\Repository\Doctrine\Test;
+namespace XApi\Repository\Doctrine\Tests;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
+use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
 use XApi\Repository\Api\ActivityRepositoryInterface;
 
@@ -22,21 +23,16 @@ use XApi\Repository\Api\ActivityRepositoryInterface;
  */
 final class ActivityRepository implements ActivityRepositoryInterface
 {
-    private $repository;
-    private $objectManager;
-
-    public function __construct(ActivityRepositoryInterface $repository, ObjectManager $objectManager)
+    public function __construct(private readonly ActivityRepositoryInterface $activityRepository, private readonly ObjectManager $objectManager)
     {
-        $this->repository = $repository;
-        $this->objectManager = $objectManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findActivityById(IRI $activityId)
+    public function findActivityById(IRI $iri): Activity
     {
-        $activity = $this->repository->findActivityById($activityId);
+        $activity = $this->activityRepository->findActivityById($iri);
         $this->objectManager->clear();
 
         return $activity;

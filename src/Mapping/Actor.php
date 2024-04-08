@@ -24,72 +24,51 @@ use Xabbuh\XApi\Model\IRL;
  */
 class Actor
 {
-    public $identifier;
+    public int $identifier;
+
+    public string $type;
+
+    public ?string $mbox = null;
+
+    public ?string $mboxSha1Sum = null;
+
+    public ?string $openId = null;
+
+    public ?string $accountName = null;
+
+    public ?string $accountHomePage = null;
+
+    public ?string $name = null;
 
     /**
-     * @var string
-     */
-    public $type;
-
-    /**
-     * @var string|null
-     */
-    public $mbox;
-
-    /**
-     * @var string|null
-     */
-    public $mboxSha1Sum;
-
-    /**
-     * @var string|null
-     */
-    public $openId;
-
-    /**
-     * @var string|null
-     */
-    public $accountName;
-
-    /**
-     * @var string|null
-     */
-    public $accountHomePage;
-
-    /**
-     * @var string|null
-     */
-    public $name;
-
-    /**
-     * @var Actor[]|null
+     * @var Actor[]
      */
     public $members;
 
-    public static function fromModel(ActorModel $model)
+    public static function fromModel(ActorModel $actorModel): Actor
     {
-        $inverseFunctionalIdentifier = $model->getInverseFunctionalIdentifier();
+        $inverseFunctionalIdentifier = $actorModel->getInverseFunctionalIdentifier();
 
         $actor = new self();
-        $actor->mboxSha1Sum = $inverseFunctionalIdentifier->getMboxSha1Sum();
-        $actor->openId = $inverseFunctionalIdentifier->getOpenId();
-        $actor->name = $model->getName();
+        $actor->mboxSha1Sum = $inverseFunctionalIdentifier?->getMboxSha1Sum();
+        $actor->openId = $inverseFunctionalIdentifier?->getOpenId();
+        $actor->name = $actorModel->getName();
 
-        if (null !== $mbox = $inverseFunctionalIdentifier->getMbox()) {
+        if (($mbox = $inverseFunctionalIdentifier?->getMbox()) instanceof IRI) {
             $actor->mbox = $mbox->getValue();
         }
 
-        if (null !== $account = $inverseFunctionalIdentifier->getAccount()) {
+        if (($account = $inverseFunctionalIdentifier?->getAccount()) instanceof Account) {
             $actor->accountName = $account->getName();
             $actor->accountHomePage = $account->getHomePage()->getValue();
         }
 
-        if ($model instanceof Group) {
+        if ($actorModel instanceof Group) {
             $actor->type = 'group';
-            $actor->members = array();
+            $actor->members = [];
 
-            foreach ($model->getMembers() as $agent) {
-                $actor->members[] = Actor::fromModel($agent);
+            foreach ($actorModel->getMembers() as $member) {
+                $actor->members[] = self::fromModel($member);
             }
         } else {
             $actor->type = 'agent';
@@ -98,7 +77,7 @@ class Actor
         return $actor;
     }
 
-    public function getModel()
+    public function getModel(): Agent|Group
     {
         $inverseFunctionalIdentifier = null;
 
@@ -113,10 +92,10 @@ class Actor
         }
 
         if ('group' === $this->type) {
-            $members = array();
+            $members = [];
 
-            foreach ($this->members as $agent) {
-                $members[] = $agent->getModel();
+            foreach ($this->members as $member) {
+                $members[] = $member->getModel();
             }
 
             return new Group($inverseFunctionalIdentifier, $this->name, $members);

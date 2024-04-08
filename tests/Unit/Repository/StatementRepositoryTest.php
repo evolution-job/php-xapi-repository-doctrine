@@ -11,14 +11,15 @@
 
 namespace XApi\Repository\Doctrine\Tests\Unit\Repository;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Rhumsaa\Uuid\Uuid as RhumsaUuid;
 use Xabbuh\XApi\DataFixtures\StatementFixtures;
 use Xabbuh\XApi\DataFixtures\VerbFixtures;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementsFilter;
 use Xabbuh\XApi\Model\Uuid as ModelUuid;
 use XApi\Repository\Doctrine\Mapping\Statement as MappedStatement;
+use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as MappedStatementRepository;
 use XApi\Repository\Doctrine\Repository\StatementRepository;
 
 /**
@@ -26,105 +27,65 @@ use XApi\Repository\Doctrine\Repository\StatementRepository;
  */
 class StatementRepositoryTest extends TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|\XApi\Repository\Doctrine\Repository\Mapping\StatementRepository
-     */
-    private $mappedStatementRepository;
+    private MockObject|MappedStatementRepository $mappedStatementRepository;
 
-    /**
-     * @var StatementRepository
-     */
-    private $statementRepository;
+    private StatementRepository $statementRepository;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->mappedStatementRepository = $this->createMappedStatementRepositoryMock();
         $this->statementRepository = new StatementRepository($this->mappedStatementRepository);
     }
 
-    public function testFindStatementById()
+    public function testFindStatementById(): void
     {
-        if (class_exists('Xabbuh\XApi\Model\Uuid')) {
-            $statementId = StatementId::fromUuid(ModelUuid::uuid4());
-        } else {
-            $statementId = StatementId::fromUuid(RhumsaUuid::uuid4());
-        }
+        $statementId = StatementId::fromUuid(ModelUuid::uuid4());
 
-        $this
-            ->mappedStatementRepository
-            ->expects($this->once())
-            ->method('findStatement')
-            ->with(array('id' => $statementId->getValue()))
-            ->will($this->returnValue(MappedStatement::fromModel(StatementFixtures::getMinimalStatement())));
+        $this->mappedStatementRepository->expects($this->once())->method('findStatement')->with(['id' => $statementId->getValue()])->willReturn(MappedStatement::fromModel(StatementFixtures::getMinimalStatement()));
 
         $this->statementRepository->findStatementById($statementId);
     }
 
-    public function testFindStatementsByCriteria()
+    public function testFindStatementsByCriteria(): void
     {
         $verb = VerbFixtures::getTypicalVerb();
 
-        $this
-            ->mappedStatementRepository
-            ->expects($this->once())
-            ->method('findStatements')
-            ->with($this->equalTo(array('verb' => $verb->getId()->getValue())))
-            ->will($this->returnValue(array()));
+        $this->mappedStatementRepository->expects($this->once())->method('findStatements')->with(['verb' => $verb->getId()->getValue()])->willReturn([]);
 
-        $filter = new StatementsFilter();
-        $filter->byVerb($verb);
-        $this->statementRepository->findStatementsBy($filter);
+        $statementsFilter = new StatementsFilter();
+        $statementsFilter->byVerb($verb);
+        
+        $this->statementRepository->findStatementsBy($statementsFilter);
     }
 
-    public function testSave()
+    public function testSave(): void
     {
         $statement = StatementFixtures::getMinimalStatement();
-        $this
-            ->mappedStatementRepository
-            ->expects($this->once())
-            ->method('storeStatement')
-            ->with(
-                $this->callback(function (MappedStatement $mappedStatement) use ($statement) {
-                    $expected = MappedStatement::fromModel($statement);
-                    $actual = clone $mappedStatement;
-                    $actual->stored = null;
-
-                    return $expected == $actual;
-                }),
-                true
-            );
+        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement) : bool {
+            $expected = MappedStatement::fromModel($statement);
+            $actual = clone $mappedStatement;
+            $actual->stored = null;
+            return $expected == $actual;
+        }), true);
 
         $this->statementRepository->storeStatement($statement);
     }
 
-    public function testSaveWithoutFlush()
+    public function testSaveWithoutFlush(): void
     {
         $statement = StatementFixtures::getMinimalStatement();
-        $this
-            ->mappedStatementRepository
-            ->expects($this->once())
-            ->method('storeStatement')
-            ->with(
-                $this->callback(function (MappedStatement $mappedStatement) use ($statement) {
-                    $expected = MappedStatement::fromModel($statement);
-                    $actual = clone $mappedStatement;
-                    $actual->stored = null;
-
-                    return $expected == $actual;
-                }),
-                false
-            );
+        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement) : bool {
+            $expected = MappedStatement::fromModel($statement);
+            $actual = clone $mappedStatement;
+            $actual->stored = null;
+            return $expected == $actual;
+        }), false);
 
         $this->statementRepository->storeStatement($statement, false);
     }
 
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|\XApi\Repository\Doctrine\Repository\Mapping\StatementRepository
-     */
-    protected function createMappedStatementRepositoryMock()
+    protected function createMappedStatementRepositoryMock(): MappedStatementRepository|MockObject
     {
-        return $this
-            ->getMockBuilder('\XApi\Repository\Doctrine\Repository\Mapping\StatementRepository')
-            ->getMock();
+        return $this->getMockBuilder(MappedStatementRepository::class)->getMock();
     }
 }

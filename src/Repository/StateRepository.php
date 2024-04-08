@@ -23,30 +23,17 @@ use XApi\Repository\Doctrine\Repository\Mapping\StateRepository as BaseStateRepo
  */
 final class StateRepository implements StateRepositoryInterface
 {
-    private $repository;
+    public function __construct(private readonly BaseStateRepository $baseStateRepository) { }
 
-    public function __construct(BaseStateRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
-    /**
-     * @param array $criteria
-     * @return MappedState|object|null
-     */
     public function findState(array $criteria)
     {
-        return $this->repository->findState($criteria);
+        return $this->baseStateRepository->findState($criteria);
     }
 
-    /**
-     * @param State $state
-     * @param bool $flush
-     */
-    public function storeState(State $state, $flush = true): void
+    public function storeState(State $state, bool $flush = true): void
     {
         $mappedState = MappedState::fromModel($state);
 
-        $this->repository->storeState($mappedState);
+        $this->baseStateRepository->storeState($mappedState);
     }
 }

@@ -13,6 +13,7 @@ namespace XApi\Repository\Doctrine\Mapping;
 
 use DateTime;
 use DateTimeZone;
+use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Statement as StatementModel;
 use Xabbuh\XApi\Model\StatementId;
 
@@ -23,93 +24,60 @@ use Xabbuh\XApi\Model\StatementId;
  */
 class Statement
 {
-    /**
-     * @var string
-     */
-    public $id;
+    public string $id;
+
+    public ?StatementObject $actor = null;
+
+    public ?Verb $verb = null;
+
+    public ?StatementObject $object = null;
+
+    public ?Result $result = null;
+
+    public ?StatementObject $authority = null;
+
+    public ?DateTime $created = null;
+
+    public ?DateTime $stored = null;
+
+    public ?Context $context = null;
+
+    public bool $hasAttachments;
 
     /**
-     * @var StatementObject
-     */
-    public $actor;
-
-    /**
-     * @var Verb
-     */
-    public $verb;
-
-    /**
-     * @var StatementObject
-     */
-    public $object;
-
-    /**
-     * @var Result
-     */
-    public $result;
-
-    /**
-     * @var StatementObject
-     */
-    public $authority;
-
-    /**
-     * @var DateTime|null
-     */
-    public $created;
-
-    /**
-     * @var DateTime|null
-     */
-    public $stored;
-
-    /**
-     * @var Context
-     */
-    public $context;
-
-    /**
-     * @var bool
-     */
-    public $hasAttachments;
-
-    /**
-     * @var Attachment[]|null
+     * @var Attachment[]
      */
     public $attachments;
 
-    /**
-     * @var string
-     */
-    public $version;
+    public ?string $version = null;
 
-    public static function fromModel(StatementModel $model)
+    public static function fromModel(StatementModel $statementModel): self
     {
         $statement = new self();
-        $statement->id = $model->getId()->getValue();
-        $statement->actor = StatementObject::fromModel($model->getActor());
-        $statement->verb = Verb::fromModel($model->getVerb());
-        $statement->object = StatementObject::fromModel($model->getObject());
-        $statement->version = $model->getVersion();
+        $statement->id = $statementModel->getId()?->getValue();
+        $statement->actor = StatementObject::fromModel($statementModel->getActor());
+        $statement->verb = Verb::fromModel($statementModel->getVerb());
+        $statement->object = StatementObject::fromModel($statementModel->getObject());
+        $statement->version = $statementModel->getVersion();
 
-        if (null !== $model->getCreated()) {
-            $model->getCreated()->setTimezone(new DateTimeZone('UTC'));
-            $statement->created = $model->getCreated();
+        if ($statementModel->getCreated() instanceof DateTime) {
+            $statementModel->getCreated()->setTimezone(new DateTimeZone('UTC'));
+            $statement->created = $statementModel->getCreated();
         }
 
-        if (null !== $result = $model->getResult()) {
+        if (($result = $statementModel->getResult()) instanceof \Xabbuh\XApi\Model\Result) {
             $statement->result = Result::fromModel($result);
         }
 
-        if (null !== $authority = $model->getAuthority()) {
+        if (($authority = $statementModel->getAuthority()) instanceof Actor) {
             $statement->authority = StatementObject::fromModel($authority);
         }
 
-        if (null !== $context = $model->getContext()) {
+        if (($context = $statementModel->getContext()) instanceof \Xabbuh\XApi\Model\Context) {
             $statement->context = Context::fromModel($context);
         }
 
-        if (null !== $attachments = $model->getAttachments()) {
+        if (null !== $attachments = $statementModel->getAttachments()) {
             $statement->hasAttachments = true;
             $statement->attachments = [];
 
@@ -125,22 +93,13 @@ class Statement
         return $statement;
     }
 
-    public function getModel()
+    public function getModel(): StatementModel
     {
-        $result = null;
-        $authority = null;
-        $created = null;
-        $stored = null;
-        $context = null;
         $attachments = null;
-
-        if (null !== $this->result) {
-            $result = $this->result->getModel();
-        }
-
-        if (null !== $this->authority) {
-            $authority = $this->authority->getModel();
-        }
+        $authority = $this->authority?->getModel();
+        $created = null;
+        $result = $this->result?->getModel();
+        $stored = null;
 
         if (null !== $this->created) {
             $created = $this->created;
@@ -150,9 +109,7 @@ class Statement
             $stored = $this->stored;
         }
 
-        if (null !== $this->context) {
-            $context = $this->context->getModel();
-        }
+        $context = $this->context?->getModel();
 
         if ($this->hasAttachments) {
             $attachments = [];

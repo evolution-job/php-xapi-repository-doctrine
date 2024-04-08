@@ -11,6 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Mapping;
 
+use SplObjectStorage;
 use Xabbuh\XApi\Model\Extensions as ExtensionsModel;
 use Xabbuh\XApi\Model\IRI;
 
@@ -19,24 +20,25 @@ use Xabbuh\XApi\Model\IRI;
  */
 class Extensions
 {
-    public $identifier;
+    public int $identifier;
+
     public $extensions;
 
-    public static function fromModel(ExtensionsModel $model)
+    public static function fromModel(ExtensionsModel $extensionsModel): self
     {
         $extensions = new self();
-        $extensions->extensions = array();
+        $extensions->extensions = [];
 
-        foreach ($model->getExtensions() as $key) {
-            $extensions->extensions[$key->getValue()] = $model[$key];
+        foreach ($extensionsModel->getExtensions() as $extension) {
+            $extensions->extensions[$extension->getValue()] = $extensionsModel[$extension];
         }
 
         return $extensions;
     }
 
-    public function getModel()
+    public function getModel(): ExtensionsModel
     {
-        $extensions = new \SplObjectStorage();
+        $extensions = new SplObjectStorage();
 
         foreach ($this->extensions as $key => $extension) {
             $extensions->attach(IRI::fromString($key), $extension);

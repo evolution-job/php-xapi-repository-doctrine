@@ -1,14 +1,20 @@
 CHANGELOG
 =========
 
+0.5.0
+-----
+
+* dropped support for PHP < 8.1
+* All dependencies from php-xapi/* are now loaded from forks at `https://github.com/evolution-job/`
+
 0.4.0
 -----
+
+* dropped support for PHP < 5.6 and HHVM
 
 * The `XApi\Repository\Doctrine\Mapping\Object` class was renamed to
   `XApi\Repository\Doctrine\Mapping\StatementObject` for compatibility with
   PHP 7.2.
-
-* dropped suppport for PHP < 5.6 and HHVM
 
 * made the package compatible with `3.x` releases of `ramsey/uuid`
 

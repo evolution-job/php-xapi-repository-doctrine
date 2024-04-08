@@ -25,33 +25,25 @@ use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
  */
 final class ActivityRepository implements ActivityRepositoryInterface
 {
-    private $storage;
-
-    public function __construct(StatementObjectStorage $storage)
-    {
-        $this->storage = $storage;
-    }
+    public function __construct(private readonly StatementObjectStorage $statementObjectStorage) { }
 
     /**
      * {@inheritdoc}
      */
-    public function findActivityById(IRI $activityId)
+    public function findActivityById(IRI $iri): Activity
     {
-        $criteria = array(
-            'type' => StatementObject::TYPE_ACTIVITY,
-            'activityId' => $activityId->getValue(),
-        );
+        $criteria = ['type' => StatementObject::TYPE_ACTIVITY, 'activityId' => $iri->getValue()];
 
-        $mappedObject = $this->storage->findObject($criteria);
+        $mappedObject = $this->statementObjectStorage->findObject($criteria);
 
         if (null === $mappedObject) {
-            throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $activityId->getValue()));
+            throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $iri->getValue()));
         }
 
         $activity = $mappedObject->getModel();
 
         if (!$activity instanceof Activity) {
-            throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $activityId->getValue()));
+            throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $iri->getValue()));
         }
 
         return $activity;

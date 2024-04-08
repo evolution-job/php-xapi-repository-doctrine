@@ -22,19 +22,11 @@ use Xabbuh\XApi\Model\Verb as VerbModel;
  */
 class Verb
 {
-    public $identifier;
+    public string $id;
+    public int $identifier;
+    public ?array $display = null;
 
-    /**
-     * @var string
-     */
-    public $id;
-
-    /**
-     * @var array|null
-     */
-    public $display;
-
-    public function getModel()
+    public function getModel(): VerbModel
     {
         $display = null;
 
@@ -45,13 +37,13 @@ class Verb
         return new VerbModel(IRI::fromString($this->id), $display);
     }
 
-    public static function fromModel(VerbModel $model)
+    public static function fromModel(VerbModel $verbModel): self
     {
         $verb = new self();
-        $verb->id = $model->getId()->getValue();
+        $verb->id = $verbModel->getId()->getValue();
 
-        if (null !== $display = $model->getDisplay()) {
-            $verb->display = array();
+        if (($display = $verbModel->getDisplay()) instanceof LanguageMap) {
+            $verb->display = [];
 
             foreach ($display->languageTags() as $languageTag) {
                 $verb->display[$languageTag] = $display[$languageTag];

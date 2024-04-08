@@ -11,6 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Mapping;
 
+use InvalidArgumentException;
 use Xabbuh\XApi\Model\Account;
 use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\Actor as ActorModel;
@@ -21,9 +22,8 @@ use Xabbuh\XApi\Model\InverseFunctionalIdentifier;
 use Xabbuh\XApi\Model\IRI;
 use Xabbuh\XApi\Model\IRL;
 use Xabbuh\XApi\Model\LanguageMap;
-use Xabbuh\XApi\Model\Object as ObjectModel;
-use Xabbuh\XApi\Model\StatementObject as StatementObjectModel;
 use Xabbuh\XApi\Model\StatementId;
+use Xabbuh\XApi\Model\StatementObject as StatementObjectModel;
 use Xabbuh\XApi\Model\StatementReference;
 use Xabbuh\XApi\Model\SubStatement;
 
@@ -32,158 +32,77 @@ use Xabbuh\XApi\Model\SubStatement;
  */
 class StatementObject
 {
-    const TYPE_ACTIVITY = 'activity';
-    const TYPE_AGENT = 'agent';
-    const TYPE_GROUP = 'group';
-    const TYPE_STATEMENT_REFERENCE = 'statement_reference';
-    const TYPE_SUB_STATEMENT = 'sub_statement';
+    public const TYPE_ACTIVITY = 'activity';
+    public const TYPE_AGENT = 'agent';
+    public const TYPE_GROUP = 'group';
+    public const TYPE_STATEMENT_REFERENCE = 'statement_reference';
+    public const TYPE_SUB_STATEMENT = 'sub_statement';
 
-    public $identifier;
+    public int $identifier;
 
-    /**
-     * @var string
-     */
-    public $type;
+    public ?string $type = null;
 
-    /**
-     * @var string|null
-     */
-    public $activityId;
+    public ?string $activityId = null;
 
-    /**
-     * @var bool|null
-     */
-    public $hasActivityDefinition;
+    public ?bool $hasActivityDefinition = null;
 
-    /**
-     * @var bool|null
-     */
-    public $hasActivityName;
+    public ?bool $hasActivityName = null;
 
-    /**
-     * @var array|null
-     */
-    public $activityName;
+    public ?array $activityName = null;
 
-    /**
-     * @var bool|null
-     */
-    public $hasActivityDescription;
+    public ?bool $hasActivityDescription = null;
 
-    /**
-     * @var array|null
-     */
-    public $activityDescription;
+    public ?array $activityDescription = null;
+
+    public ?string $activityType = null;
+
+    public ?string $activityMoreInfo = null;
+
+    public ?Extensions $activityExtensions = null;
+
+    public ?string $mbox = null;
+
+    public ?string $mboxSha1Sum = null;
+
+    public ?string $openId = null;
+
+    public ?string $accountName = null;
+
+    public ?string $accountHomePage = null;
+
+    public ?string $name = null;
 
     /**
-     * @var string|null
-     */
-    public $activityType;
-
-    /**
-     * @var string|null
-     */
-    public $activityMoreInfo;
-
-    /**
-     * @var Extensions|null
-     */
-    public $activityExtensions;
-
-    /**
-     * @var string|null
-     */
-    public $mbox;
-
-    /**
-     * @var string|null
-     */
-    public $mboxSha1Sum;
-
-    /**
-     * @var string|null
-     */
-    public $openId;
-
-    /**
-     * @var string|null
-     */
-    public $accountName;
-
-    /**
-     * @var string|null
-     */
-    public $accountHomePage;
-
-    /**
-     * @var string|null
-     */
-    public $name;
-
-    /**
-     * @var StatementObject[]|null
+     * @var StatementObject[]
      */
     public $members;
 
-    /**
-     * @var StatementObject|null
-     */
-    public $group;
+    public ?StatementObject $group = null;
 
-    /**
-     * @var string|null
-     */
-    public $referencedStatementId;
+    public ?string $referencedStatementId = null;
 
-    /**
-     * @var StatementObject|null
-     */
-    public $actor;
+    public ?StatementObject $actor = null;
 
-    /**
-     * @var Verb|null
-     */
-    public $verb;
+    public ?Verb $verb = null;
 
-    /**
-     * @var StatementObject|null
-     */
-    public $object;
+    public ?StatementObject $object = null;
 
-    /**
-     * @var Result|null
-     */
-    public $result;
+    public ?Result $result = null;
 
-    /**
-     * @var Context|null
-     */
-    public $context;
+    public ?Context $context = null;
 
-    /**
-     * @var Statement|null
-     */
-    public $parentContext;
+    public ?Context $parentContext = null;
 
-    /**
-     * @var Statement|null
-     */
-    public $groupingContext;
+    public ?Context $groupingContext = null;
 
-    /**
-     * @var Statement|null
-     */
-    public $categoryContext;
+    public ?Context $categoryContext = null;
 
-    /**
-     * @var Statement|null
-     */
-    public $otherContext;
+    public ?Context $otherContext = null;
 
-    public static function fromModel($model)
+    public static function fromModel($model): ?StatementObject
     {
-        if (!$model instanceof ObjectModel && !$model instanceof StatementObjectModel) {
-            throw new \InvalidArgumentException(sprintf('Expected a statement object but got %s', is_object($model) ? get_class($model) : gettype($model)));
+        if (!$model instanceof StatementObjectModel) {
+            throw new InvalidArgumentException(sprintf('Expected a statement object but got %s', get_debug_type($model)));
         }
 
         if ($model instanceof ActorModel) {
@@ -198,14 +117,18 @@ class StatementObject
             return $object;
         }
 
+        if ($model instanceof Activity) {
+            return self::fromActivity($model);
+        }
+
         if ($model instanceof SubStatement) {
             return self::fromSubStatement($model);
         }
 
-        return self::fromActivity($model);
+        return null;
     }
 
-    public function getModel()
+    public function getModel(): StatementReference|Agent|Activity|Group|SubStatement
     {
         if (self::TYPE_AGENT === $this->type || self::TYPE_GROUP === $this->type) {
             return $this->getActorModel();
@@ -222,17 +145,17 @@ class StatementObject
         return $this->getActivityModel();
     }
 
-    private static function fromActivity(Activity $model)
+    private static function fromActivity(Activity $activity): self
     {
         $object = new self();
-        $object->activityId = $model->getId()->getValue();
+        $object->activityId = $activity->getId()->getValue();
 
-        if (null !== $definition = $model->getDefinition()) {
+        if (($definition = $activity->getDefinition()) instanceof Definition) {
             $object->hasActivityDefinition = true;
 
-            if (null !== $name = $definition->getName()) {
+            if (($name = $definition->getName()) instanceof LanguageMap) {
                 $object->hasActivityName = true;
-                $object->activityName = array();
+                $object->activityName = [];
 
                 foreach ($name->languageTags() as $languageTag) {
                     $object->activityName[$languageTag] = $name[$languageTag];
@@ -241,9 +164,9 @@ class StatementObject
                 $object->hasActivityName = false;
             }
 
-            if (null !== $description = $definition->getDescription()) {
+            if (($description = $definition->getDescription()) instanceof LanguageMap) {
                 $object->hasActivityDescription = true;
-                $object->activityDescription = array();
+                $object->activityDescription = [];
 
                 foreach ($description->languageTags() as $languageTag) {
                     $object->activityDescription[$languageTag] = $description[$languageTag];
@@ -252,15 +175,15 @@ class StatementObject
                 $object->hasActivityDescription = false;
             }
 
-            if (null !== $type = $definition->getType()) {
+            if (($type = $definition->getType()) instanceof IRI) {
                 $object->activityType = $type->getValue();
             }
 
-            if (null !== $moreInfo = $definition->getMoreInfo()) {
+            if (($moreInfo = $definition->getMoreInfo()) instanceof IRL) {
                 $object->activityMoreInfo = $moreInfo->getValue();
             }
 
-            if (null !== $extensions = $definition->getExtensions()) {
+            if (($extensions = $definition->getExtensions()) instanceof \Xabbuh\XApi\Model\Extensions) {
                 $object->activityExtensions = Extensions::fromModel($extensions);
             }
         } else {
@@ -270,30 +193,30 @@ class StatementObject
         return $object;
     }
 
-    private static function fromActor(ActorModel $model)
+    private static function fromActor(ActorModel $actorModel): self
     {
-        $inverseFunctionalIdentifier = $model->getInverseFunctionalIdentifier();
+        $inverseFunctionalIdentifier = $actorModel->getInverseFunctionalIdentifier();
 
         $object = new self();
-        $object->mboxSha1Sum = $inverseFunctionalIdentifier->getMboxSha1Sum();
-        $object->openId = $inverseFunctionalIdentifier->getOpenId();
-        $object->name = $model->getName();
+        $object->mboxSha1Sum = $inverseFunctionalIdentifier?->getMboxSha1Sum();
+        $object->openId = $inverseFunctionalIdentifier?->getOpenId();
+        $object->name = $actorModel->getName();
 
-        if (null !== $mbox = $inverseFunctionalIdentifier->getMbox()) {
+        if (($mbox = $inverseFunctionalIdentifier?->getMbox()) instanceof IRI) {
             $object->mbox = $mbox->getValue();
         }
 
-        if (null !== $account = $inverseFunctionalIdentifier->getAccount()) {
+        if (($account = $inverseFunctionalIdentifier?->getAccount()) instanceof Account) {
             $object->accountName = $account->getName();
             $object->accountHomePage = $account->getHomePage()->getValue();
         }
 
-        if ($model instanceof Group) {
+        if ($actorModel instanceof Group) {
             $object->type = self::TYPE_GROUP;
-            $object->members = array();
+            $object->members = [];
 
-            foreach ($model->getMembers() as $agent) {
-                $object->members[] = self::fromActor($agent);
+            foreach ($actorModel->getMembers() as $member) {
+                $object->members[] = self::fromActor($member);
             }
         } else {
             $object->type = self::TYPE_AGENT;
@@ -302,18 +225,18 @@ class StatementObject
         return $object;
     }
 
-    private static function fromSubStatement(SubStatement $model)
+    private static function fromSubStatement(SubStatement $subStatement): self
     {
         $object = new self();
         $object->type = self::TYPE_SUB_STATEMENT;
-        $object->actor = StatementObject::fromModel($model->getActor());
-        $object->verb = Verb::fromModel($model->getVerb());
-        $object->object = StatementObject::fromModel($model->getObject());
+        $object->actor = self::fromModel($subStatement->getActor());
+        $object->verb = Verb::fromModel($subStatement->getVerb());
+        $object->object = self::fromModel($subStatement->getObject());
 
         return $object;
     }
 
-    private function getActivityModel()
+    private function getActivityModel(): Activity
     {
         $definition = null;
         $type = null;
@@ -322,7 +245,6 @@ class StatementObject
         if ($this->hasActivityDefinition) {
             $name = null;
             $description = null;
-            $extensions = null;
 
             if ($this->hasActivityName) {
                 $name = LanguageMap::create($this->activityName);
@@ -340,9 +262,7 @@ class StatementObject
                 $moreInfo = IRL::fromString($this->activityMoreInfo);
             }
 
-            if (null !== $this->activityExtensions) {
-                $extensions = $this->activityExtensions->getModel();
-            }
+            $extensions = $this->activityExtensions?->getModel();
 
             $definition = new Definition($name, $description, $type, $moreInfo, $extensions);
         }
@@ -350,7 +270,7 @@ class StatementObject
         return new Activity(IRI::fromString($this->activityId), $definition);
     }
 
-    private function getActorModel()
+    private function getActorModel(): Group|Agent
     {
         $inverseFunctionalIdentifier = null;
 
@@ -365,10 +285,10 @@ class StatementObject
         }
 
         if (self::TYPE_GROUP === $this->type) {
-            $members = array();
+            $members = [];
 
-            foreach ($this->members as $agent) {
-                $members[] = $agent->getModel();
+            foreach ($this->members as $member) {
+                $members[] = $member->getModel();
             }
 
             return new Group($inverseFunctionalIdentifier, $this->name, $members);
@@ -377,7 +297,7 @@ class StatementObject
         return new Agent($inverseFunctionalIdentifier, $this->name);
     }
 
-    private function getSubStatementModel()
+    private function getSubStatementModel(): SubStatement
     {
         $result = null;
         $context = null;

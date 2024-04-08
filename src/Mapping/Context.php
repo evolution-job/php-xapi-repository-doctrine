@@ -11,8 +11,10 @@
 
 namespace XApi\Repository\Doctrine\Mapping;
 
+use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Context as ContextModel;
 use Xabbuh\XApi\Model\ContextActivities;
+use Xabbuh\XApi\Model\Group;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementReference;
 
@@ -21,94 +23,67 @@ use Xabbuh\XApi\Model\StatementReference;
  */
 class Context
 {
-    public $identifier;
+    public int $identifier;
+
+    public ?string $registration = null;
+
+    public ?StatementObject $instructor = null;
+
+    public ?StatementObject $team = null;
+
+    public ?bool $hasContextActivities = null;
 
     /**
-     * @var string|null
-     */
-    public $registration;
-
-    /**
-     * @var StatementObject|null
-     */
-    public $instructor;
-
-    /**
-     * @var StatementObject|null
-     */
-    public $team;
-
-    /**
-     * @var bool|null
-     */
-    public $hasContextActivities;
-
-    /**
-     * @var StatementObject[]|null
+     * @var StatementObject[]
      */
     public $parentActivities;
 
     /**
-     * @var StatementObject[]|null
+     * @var StatementObject[]
      */
     public $groupingActivities;
 
     /**
-     * @var StatementObject[]|null
+     * @var StatementObject[]
      */
     public $categoryActivities;
 
     /**
-     * @var StatementObject[]|null
+     * @var StatementObject[]
      */
     public $otherActivities;
 
-    /**
-     * @var string|null
-     */
-    public $revision;
+    public ?string $revision = null;
 
-    /**
-     * @var string|null
-     */
-    public $platform;
+    public ?string $platform = null;
 
-    /**
-     * @var string|null
-     */
-    public $language;
+    public ?string $language = null;
 
-    /**
-     * @var string|null
-     */
-    public $statement;
+    public ?string $statement = null;
 
-    /**
-     * @var Extensions|null
-     */
-    public $extensions;
+    public ?Extensions $extensions = null;
 
-    public static function fromModel(ContextModel $model)
+    public static function fromModel(ContextModel $contextModel): self
     {
         $context = new self();
-        $context->registration = $model->getRegistration();
-        $context->revision = $model->getRevision();
-        $context->platform = $model->getPlatform();
-        $context->language = $model->getLanguage();
+        $context->registration = $contextModel->getRegistration();
+        $context->revision = $contextModel->getRevision();
+        $context->platform = $contextModel->getPlatform();
+        $context->language = $contextModel->getLanguage();
 
-        if (null !== $instructor = $model->getInstructor()) {
+        if (($instructor = $contextModel->getInstructor()) instanceof Actor) {
             $context->instructor = StatementObject::fromModel($instructor);
         }
 
-        if (null !== $team = $model->getTeam()) {
+        if (($team = $contextModel->getTeam()) instanceof Group) {
             $context->team = StatementObject::fromModel($team);
         }
 
-        if (null !== $contextActivities = $model->getContextActivities()) {
+        if (($contextActivities = $contextModel->getContextActivities()) instanceof ContextActivities) {
             $context->hasContextActivities = true;
 
             if (null !== $parentActivities = $contextActivities->getParentActivities()) {
-                $context->parentActivities = array();
+                $context->parentActivities = [];
 
                 foreach ($parentActivities as $parentActivity) {
                     $activity = StatementObject::fromModel($parentActivity);
@@ -118,7 +93,7 @@ class Context
             }
 
             if (null !== $groupingActivities = $contextActivities->getGroupingActivities()) {
-                $context->groupingActivities = array();
+                $context->groupingActivities = [];
 
                 foreach ($groupingActivities as $groupingActivity) {
                     $activity = StatementObject::fromModel($groupingActivity);
@@ -128,7 +103,7 @@ class Context
             }
 
             if (null !== $categoryActivities = $contextActivities->getCategoryActivities()) {
-                $context->categoryActivities = array();
+                $context->categoryActivities = [];
 
                 foreach ($categoryActivities as $categoryActivity) {
                     $activity = StatementObject::fromModel($categoryActivity);
@@ -138,7 +113,7 @@ class Context
             }
 
             if (null !== $otherActivities = $contextActivities->getOtherActivities()) {
-                $context->otherActivities = array();
+                $context->otherActivities = [];
 
                 foreach ($otherActivities as $otherActivity) {
                     $activity = StatementObject::fromModel($otherActivity);
@@ -150,18 +125,18 @@ class Context
             $context->hasContextActivities = false;
         }
 
-        if (null !== $statementReference = $model->getStatement()) {
+        if (($statementReference = $contextModel->getStatement()) instanceof StatementReference) {
             $context->statement = $statementReference->getStatementId()->getValue();
         }
 
-        if (null !== $contextExtensions = $model->getExtensions()) {
+        if (($contextExtensions = $contextModel->getExtensions()) instanceof \Xabbuh\XApi\Model\Extensions) {
             $context->extensions = Extensions::fromModel($contextExtensions);
         }
 
         return $context;
     }
 
-    public function getModel()
+    public function getModel(): ContextModel
     {
         $context = new ContextModel();
 
@@ -193,26 +168,26 @@ class Context
             $contextActivities = new ContextActivities();
 
             if (null !== $this->parentActivities) {
-                foreach ($this->parentActivities as $contextParentActivity) {
-                    $contextActivities = $contextActivities->withAddedParentActivity($contextParentActivity->getModel());
+                foreach ($this->parentActivities as $parentActivity) {
+                    $contextActivities = $contextActivities->withAddedParentActivity($parentActivity->getModel());
                 }
             }
 
             if (null !== $this->groupingActivities) {
-                foreach ($this->groupingActivities as $contextGroupingActivity) {
-                    $contextActivities = $contextActivities->withAddedGroupingActivity($contextGroupingActivity->getModel());
+                foreach ($this->groupingActivities as $groupingActivity) {
+                    $contextActivities = $contextActivities->withAddedGroupingActivity($groupingActivity->getModel());
                 }
             }
 
             if (null !== $this->categoryActivities) {
-                foreach ($this->categoryActivities as $contextCategoryActivity) {
-                    $contextActivities = $contextActivities->withAddedCategoryActivity($contextCategoryActivity->getModel());
+                foreach ($this->categoryActivities as $categoryActivity) {
+                    $contextActivities = $contextActivities->withAddedCategoryActivity($categoryActivity->getModel());
                 }
             }
 
             if (null !== $this->otherActivities) {
-                foreach ($this->otherActivities as $contextOtherActivity) {
-                    $contextActivities = $contextActivities->withAddedOtherActivity($contextOtherActivity->getModel());
+                foreach ($this->otherActivities as $otherActivity) {
+                    $contextActivities = $contextActivities->withAddedOtherActivity($otherActivity->getModel());
                 }
             }
 

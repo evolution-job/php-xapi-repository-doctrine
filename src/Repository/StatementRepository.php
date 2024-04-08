@@ -11,7 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Repository;
 
-use Rhumsaa\Uuid\Uuid as RhumsaaUuid;
+use DateTime;
 use Xabbuh\XApi\Common\Exception\NotFoundException;
 use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Statement;
@@ -29,25 +29,20 @@ use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as BaseState
  */
 final class StatementRepository implements StatementRepositoryInterface
 {
-    private $repository;
-
-    public function __construct(BaseStatementRepository $repository)
-    {
-        $this->repository = $repository;
-    }
+    public function __construct(private readonly BaseStatementRepository $baseStatementRepository) { }
 
     /**
      * {@inheritdoc}
      */
-    public function findStatementById(StatementId $statementId, Actor $authority = null)
+    public function findStatementById(StatementId $statementId, Actor $actor = null): Statement
     {
-        $criteria = array('id' => $statementId->getValue());
+        $criteria = ['id' => $statementId->getValue()];
 
-        if (null !== $authority) {
-            $criteria['authority'] = $authority;
+        if ($actor instanceof Actor) {
+            $criteria['authority'] = $actor;
         }
 
-        $mappedStatement = $this->repository->findStatement($criteria);
+        $mappedStatement = $this->baseStatementRepository->findStatement($criteria);
 
         if (null === $mappedStatement) {
             throw new NotFoundException('No statements could be found matching the given criteria.');
@@ -65,15 +60,15 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findVoidedStatementById(StatementId $voidedStatementId, Actor $authority = null)
+    public function findVoidedStatementById(StatementId $voidedStatementId, Actor $actor = null): Statement
     {
-        $criteria = array('id' => $voidedStatementId->getValue());
+        $criteria = ['id' => $voidedStatementId->getValue()];
 
-        if (null !== $authority) {
-            $criteria['authority'] = $authority;
+        if ($actor instanceof Actor) {
+            $criteria['authority'] = $actor;
         }
 
-        $mappedStatement = $this->repository->findStatement($criteria);
+        $mappedStatement = $this->baseStatementRepository->findStatement($criteria);
 
         if (null === $mappedStatement) {
             throw new NotFoundException('No voided statements could be found matching the given criteria.');
@@ -91,16 +86,16 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findStatementsBy(StatementsFilter $criteria, Actor $authority = null)
+    public function findStatementsBy(StatementsFilter $statementsFilter, Actor $actor = null): array
     {
-        $criteria = $criteria->getFilter();
+        $statementsFilter = $statementsFilter->getFilter();
 
-        if (null !== $authority) {
-            $criteria['authority'] = $authority;
+        if ($actor instanceof Actor) {
+            $statementsFilter['authority'] = $actor;
         }
 
-        $mappedStatements = $this->repository->findStatements($criteria);
-        $statements = array();
+        $mappedStatements = $this->baseStatementRepository->findStatements($statementsFilter);
+        $statements = [];
 
         foreach ($mappedStatements as $mappedStatement) {
             $statements[] = $mappedStatement->getModel();
@@ -112,22 +107,19 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function storeStatement(Statement $statement, $flush = true)
+    public function storeStatement(Statement $statement, bool $flush = true): StatementId
     {
-        if (null === $statement->getId()) {
-            if (class_exists('Xabbuh\XApi\Model\Uuid')) {
-                $uuid = ModelUuid::uuid4();
-            } else {
-                $uuid = RhumsaaUuid::uuid4();
-            }
+        if (!$statement->getId() instanceof StatementId) {
+
+            $uuid = ModelUuid::uuid4();
 
             $statement = $statement->withId(StatementId::fromUuid($uuid));
         }
 
         $mappedStatement = MappedStatement::fromModel($statement);
-        $mappedStatement->stored = new \DateTime();
+        $mappedStatement->stored = new DateTime();
 
-        $this->repository->storeStatement($mappedStatement, $flush);
+        $this->baseStatementRepository->storeStatement($mappedStatement, $flush);
 
         return $statement->getId();
     }
