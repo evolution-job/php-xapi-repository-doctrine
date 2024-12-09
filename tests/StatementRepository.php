@@ -34,6 +34,7 @@ final class StatementRepository implements StatementRepositoryInterface
         if (!$objectManager instanceof ObjectManager) {
             throw new TypeError(sprintf('The second argument of %s() must be an instance of %s (%s given).', __METHOD__, ObjectManager::class, get_debug_type($objectManager)));
         }
+        
         $this->objectManager = $objectManager;
     }
 

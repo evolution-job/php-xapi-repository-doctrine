@@ -29,9 +29,10 @@ abstract class StatementRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->mockObject = $this->createObjectManagerMock();
-        $unitOfWork = $this->createUnitOfWorkMock();
+        $mockObject = $this->createUnitOfWorkMock();
+        
         $classMetadata = $this->createClassMetadataMock();
-        $this->statementRepository = $this->createMappedStatementRepository($this->mockObject, $unitOfWork, $classMetadata);
+        $this->statementRepository = $this->createMappedStatementRepository($this->mockObject, $mockObject, $classMetadata);
     }
 
     public function testStatementDocumentIsPersisted(): void

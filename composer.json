@@ -38,7 +38,7 @@
     "require-dev": {
         "php-xapi/test-fixtures": "^1.2",
         "roave/security-advisories": "dev-latest",
-        "symfony/phpunit-bridge": "^v7.0",
+        "symfony/phpunit-bridge": "6.4.*",
         "phpunit/phpunit": "^10.0"
     },
     "minimum-stability": "stable",

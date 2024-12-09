@@ -23,7 +23,9 @@ use Xabbuh\XApi\Model\Verb as VerbModel;
 class Verb
 {
     public string $id;
+    
     public int $identifier;
+    
     public ?array $display = null;
 
     public function getModel(): VerbModel

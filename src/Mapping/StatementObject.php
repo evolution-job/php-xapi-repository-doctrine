@@ -33,9 +33,13 @@ use Xabbuh\XApi\Model\SubStatement;
 class StatementObject
 {
     public const TYPE_ACTIVITY = 'activity';
+    
     public const TYPE_AGENT = 'agent';
+    
     public const TYPE_GROUP = 'group';
+    
     public const TYPE_STATEMENT_REFERENCE = 'statement_reference';
+    
     public const TYPE_SUB_STATEMENT = 'sub_statement';
 
     public int $identifier;
@@ -215,8 +219,8 @@ class StatementObject
             $object->type = self::TYPE_GROUP;
             $object->members = [];
 
-            foreach ($actorModel->getMembers() as $member) {
-                $object->members[] = self::fromActor($member);
+            foreach ($actorModel->getMembers() as $agent) {
+                $object->members[] = self::fromActor($agent);
             }
         } else {
             $object->type = self::TYPE_AGENT;
@@ -242,15 +246,15 @@ class StatementObject
         $type = null;
         $moreInfo = null;
 
-        if ($this->hasActivityDefinition) {
+        if ($this->hasActivityDefinition === true) {
             $name = null;
             $description = null;
 
-            if ($this->hasActivityName) {
+            if ($this->hasActivityName === true) {
                 $name = LanguageMap::create($this->activityName);
             }
 
-            if ($this->hasActivityDescription) {
+            if ($this->hasActivityDescription === true) {
                 $description = LanguageMap::create($this->activityDescription);
             }
 

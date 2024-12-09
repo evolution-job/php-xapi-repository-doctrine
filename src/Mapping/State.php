@@ -44,9 +44,6 @@ class State
         return $state;
     }
 
-    /**
-     * @return StateModel
-     */
     public function getModel(): StateModel
     {
         return new StateModel(

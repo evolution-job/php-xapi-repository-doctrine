@@ -67,8 +67,8 @@ class Actor
             $actor->type = 'group';
             $actor->members = [];
 
-            foreach ($actorModel->getMembers() as $member) {
-                $actor->members[] = self::fromModel($member);
+            foreach ($actorModel->getMembers() as $agent) {
+                $actor->members[] = self::fromModel($agent);
             }
         } else {
             $actor->type = 'agent';

@@ -156,15 +156,15 @@ class Context
             $context = $context->withLanguage($this->language);
         }
 
-        if (null !== $this->instructor) {
+        if ($this->instructor instanceof StatementObject) {
             $context = $context->withInstructor($this->instructor->getModel());
         }
 
-        if (null !== $this->team) {
+        if ($this->team instanceof StatementObject) {
             $context = $context->withTeam($this->team->getModel());
         }
 
-        if ($this->hasContextActivities) {
+        if ($this->hasContextActivities === true) {
             $contextActivities = new ContextActivities();
 
             if (null !== $this->parentActivities) {
@@ -198,8 +198,8 @@ class Context
             $context = $context->withStatement(new StatementReference(StatementId::fromString($this->statement)));
         }
 
-        if (null !== $this->extensions) {
-            $context = $context->withExtensions($this->extensions->getModel());
+        if ($this->extensions instanceof Extensions) {
+            return $context->withExtensions($this->extensions->getModel());
         }
 
         return $context;

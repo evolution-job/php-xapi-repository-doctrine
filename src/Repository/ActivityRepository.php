@@ -34,18 +34,18 @@ final class ActivityRepository implements ActivityRepositoryInterface
     {
         $criteria = ['type' => StatementObject::TYPE_ACTIVITY, 'activityId' => $iri->getValue()];
 
-        $mappedObject = $this->statementObjectStorage->findObject($criteria);
+        $statementObject = $this->statementObjectStorage->findObject($criteria);
 
-        if (null === $mappedObject) {
+        if (null === $statementObject) {
             throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $iri->getValue()));
         }
 
-        $activity = $mappedObject->getModel();
+        $model = $statementObject->getModel();
 
-        if (!$activity instanceof Activity) {
+        if (!$model instanceof Activity) {
             throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $iri->getValue()));
         }
 
-        return $activity;
+        return $model;
     }
 }

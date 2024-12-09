@@ -101,11 +101,11 @@ class Statement
         $result = $this->result?->getModel();
         $stored = null;
 
-        if (null !== $this->created) {
+        if ($this->created instanceof DateTime) {
             $created = $this->created;
         }
 
-        if (null !== $this->stored) {
+        if ($this->stored instanceof DateTime) {
             $stored = $this->stored;
         }
 
