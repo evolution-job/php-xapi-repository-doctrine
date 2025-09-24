@@ -21,19 +21,46 @@ use XApi\Repository\Doctrine\Repository\Mapping\StateRepository as BaseStateRepo
  *
  * @author Mathieu Boldo <mathieu.boldo@entrili.com>
  */
-final class StateRepository implements StateRepositoryInterface
+final readonly class StateRepository implements StateRepositoryInterface
 {
-    public function __construct(private readonly BaseStateRepository $baseStateRepository) { }
+    public function __construct(private BaseStateRepository $baseStateRepository) { }
 
-    public function findState(array $criteria)
+    public function findState(State $state): ?State
     {
-        return $this->baseStateRepository->findState($criteria);
+        $mappedState = MappedState::fromModel($state);
+
+        return $this->baseStateRepository->findState($mappedState)?->getModel();
+    }
+
+    /**
+     * @param State $state
+     * @return array States if no matching states have been found
+     */
+    public function findStates(State $state): array
+    {
+        $mappedState = MappedState::fromModel($state);
+
+        $states = $this->baseStateRepository->findStates($mappedState);
+
+        $modelStates = [];
+        foreach ($states as $foundState) {
+            $modelStates[] = $foundState->getModel();
+        }
+
+        return $modelStates;
+    }
+
+    public function removeState(State $state, bool $flush = true): void
+    {
+        $mappedState = MappedState::fromModel($state);
+
+        $this->baseStateRepository->removeState($mappedState, $flush);
     }
 
     public function storeState(State $state, bool $flush = true): void
     {
         $mappedState = MappedState::fromModel($state);
 
-        $this->baseStateRepository->storeState($mappedState);
+        $this->baseStateRepository->storeState($mappedState, $flush);
     }
 }

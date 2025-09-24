@@ -21,8 +21,9 @@ use XApi\Repository\Doctrine\Mapping\StatementObject;
 interface StatementObjectStorage
 {
     /**
-     * @return StatementObject The object or null if no matching object
+     * @param array $criteria
+     * @return StatementObject|null The object or null if no matching object
      *                         has been found
      */
-    public function findObject(array $criteria);
+    public function findObject(array $criteria): ?StatementObject;
 }

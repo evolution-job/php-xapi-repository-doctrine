@@ -26,7 +26,7 @@ use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
  */
 class ActivityRepositoryTest extends TestCase
 {
-    private MockObject|StatementObjectStorage $objectStorage;
+    private MockObject $objectStorage;
 
     private ActivityRepository $activityRepository;
 
@@ -80,10 +80,8 @@ class ActivityRepositoryTest extends TestCase
         $this->activityRepository->findActivityById($iri);
     }
 
-    protected function createObjectStorageMock(): MockObject
+    protected function createObjectStorageMock(): MockObject|StatementObjectStorage
     {
-        return $this
-            ->getMockBuilder(StatementObjectStorage::class)
-            ->getMock();
+        return $this->createMock(StatementObjectStorage::class);
     }
 }
