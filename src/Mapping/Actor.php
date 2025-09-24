@@ -43,7 +43,7 @@ class Actor
     /**
      * @var Actor[]
      */
-    public $members;
+    public mixed $members;
 
     public static function fromModel(ActorModel $actorModel): Actor
     {

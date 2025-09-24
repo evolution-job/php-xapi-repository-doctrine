@@ -17,7 +17,7 @@ use Xabbuh\XApi\Model\Actor;
 use Xabbuh\XApi\Model\Statement;
 use Xabbuh\XApi\Model\StatementId;
 use Xabbuh\XApi\Model\StatementsFilter;
-use Xabbuh\XApi\Model\Uuid as ModelUuid;
+use Xabbuh\XApi\Model\Uuid;
 use XApi\Repository\Api\StatementRepositoryInterface;
 use XApi\Repository\Doctrine\Mapping\Statement as MappedStatement;
 use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as BaseStatementRepository;
@@ -27,14 +27,14 @@ use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as BaseState
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-final class StatementRepository implements StatementRepositoryInterface
+final readonly class StatementRepository implements StatementRepositoryInterface
 {
-    public function __construct(private readonly BaseStatementRepository $baseStatementRepository) { }
+    public function __construct(private BaseStatementRepository $baseStatementRepository) { }
 
     /**
      * {@inheritdoc}
      */
-    public function findStatementById(StatementId $statementId, Actor $actor = null): Statement
+    public function findStatementById(StatementId $statementId, ?Actor $actor = null): Statement
     {
         $criteria = ['id' => $statementId->getValue()];
 
@@ -44,13 +44,9 @@ final class StatementRepository implements StatementRepositoryInterface
 
         $mappedStatement = $this->baseStatementRepository->findStatement($criteria);
 
-        if (null === $mappedStatement) {
-            throw new NotFoundException('No statements could be found matching the given criteria.');
-        }
+        $statement = $mappedStatement?->getModel();
 
-        $statement = $mappedStatement->getModel();
-
-        if ($statement->isVoidStatement()) {
+        if (null === $statement || $statement?->isVoidStatement()) {
             throw new NotFoundException('The stored statement is a voiding statement.');
         }
 
@@ -60,7 +56,7 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findVoidedStatementById(StatementId $voidedStatementId, Actor $actor = null): Statement
+    public function findVoidedStatementById(StatementId $voidedStatementId, ?Actor $actor = null): Statement
     {
         $criteria = ['id' => $voidedStatementId->getValue()];
 
@@ -70,13 +66,9 @@ final class StatementRepository implements StatementRepositoryInterface
 
         $mappedStatement = $this->baseStatementRepository->findStatement($criteria);
 
-        if (null === $mappedStatement) {
-            throw new NotFoundException('No voided statements could be found matching the given criteria.');
-        }
+        $statement = $mappedStatement?->getModel();
 
-        $statement = $mappedStatement->getModel();
-
-        if (!$statement->isVoidStatement()) {
+        if (!$statement?->isVoidStatement()) {
             throw new NotFoundException('The stored statement is no voiding statement.');
         }
 
@@ -86,15 +78,15 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findStatementsBy(StatementsFilter $statementsFilter, Actor $actor = null): array
+    public function findStatementsBy(StatementsFilter $statementsFilter, ?Actor $actor = null): array
     {
-        $statementsFilter = $statementsFilter->getFilter();
+        $filter = $statementsFilter->getFilter();
 
         if ($actor instanceof Actor) {
-            $statementsFilter['authority'] = $actor;
+            $filter['authority'] = $actor;
         }
 
-        $mappedStatements = $this->baseStatementRepository->findStatements($statementsFilter);
+        $mappedStatements = $this->baseStatementRepository->findStatements($filter);
         $statements = [];
 
         foreach ($mappedStatements as $mappedStatement) {
@@ -111,7 +103,7 @@ final class StatementRepository implements StatementRepositoryInterface
     {
         if (!$statement->getId() instanceof StatementId) {
 
-            $uuid = ModelUuid::uuid4();
+            $uuid = Uuid::uuid4();
 
             $statement = $statement->withId(StatementId::fromUuid($uuid));
         }

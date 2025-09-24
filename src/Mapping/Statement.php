@@ -47,7 +47,7 @@ class Statement
     /**
      * @var Attachment[]
      */
-    public $attachments;
+    public mixed $attachments;
 
     public ?string $version = null;
 

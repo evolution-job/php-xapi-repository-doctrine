@@ -36,22 +36,22 @@ class Context
     /**
      * @var StatementObject[]
      */
-    public $parentActivities;
+    public mixed $parentActivities;
 
     /**
      * @var StatementObject[]
      */
-    public $groupingActivities;
+    public mixed $groupingActivities;
 
     /**
      * @var StatementObject[]
      */
-    public $categoryActivities;
+    public mixed $categoryActivities;
 
     /**
      * @var StatementObject[]
      */
-    public $otherActivities;
+    public mixed $otherActivities;
 
     public ?string $revision = null;
 
@@ -87,8 +87,10 @@ class Context
 
                 foreach ($parentActivities as $parentActivity) {
                     $activity = StatementObject::fromModel($parentActivity);
-                    $activity->parentContext = $context;
-                    $context->parentActivities[] = $activity;
+                    if ($activity instanceof StatementObject) {
+                        $activity->parentContext = $context;
+                        $context->parentActivities[] = $activity;
+                    }
                 }
             }
 
@@ -97,8 +99,10 @@ class Context
 
                 foreach ($groupingActivities as $groupingActivity) {
                     $activity = StatementObject::fromModel($groupingActivity);
-                    $activity->groupingContext = $context;
-                    $context->groupingActivities[] = $activity;
+                    if ($activity instanceof StatementObject) {
+                        $activity->groupingContext = $context;
+                        $context->groupingActivities[] = $activity;
+                    }
                 }
             }
 
@@ -107,8 +111,10 @@ class Context
 
                 foreach ($categoryActivities as $categoryActivity) {
                     $activity = StatementObject::fromModel($categoryActivity);
-                    $activity->categoryContext = $context;
-                    $context->categoryActivities[] = $activity;
+                    if ($activity instanceof StatementObject) {
+                        $activity->categoryContext = $context;
+                        $context->categoryActivities[] = $activity;
+                    }
                 }
             }
 
@@ -117,8 +123,10 @@ class Context
 
                 foreach ($otherActivities as $otherActivity) {
                     $activity = StatementObject::fromModel($otherActivity);
-                    $activity->otherContext = $context;
-                    $context->otherActivities[] = $activity;
+                    if ($activity instanceof StatementObject) {
+                        $activity->otherContext = $context;
+                        $context->otherActivities[] = $activity;
+                    }
                 }
             }
         } else {
@@ -165,30 +173,23 @@ class Context
         }
 
         if ($this->hasContextActivities === true) {
+
             $contextActivities = new ContextActivities();
 
-            if (null !== $this->parentActivities) {
-                foreach ($this->parentActivities as $parentActivity) {
-                    $contextActivities = $contextActivities->withAddedParentActivity($parentActivity->getModel());
-                }
+            foreach ($this->parentActivities as $parentActivity) {
+                $contextActivities = $contextActivities->withAddedParentActivity($parentActivity->getModel());
             }
 
-            if (null !== $this->groupingActivities) {
-                foreach ($this->groupingActivities as $groupingActivity) {
-                    $contextActivities = $contextActivities->withAddedGroupingActivity($groupingActivity->getModel());
-                }
+            foreach ($this->groupingActivities as $groupingActivity) {
+                $contextActivities = $contextActivities->withAddedGroupingActivity($groupingActivity->getModel());
             }
 
-            if (null !== $this->categoryActivities) {
-                foreach ($this->categoryActivities as $categoryActivity) {
-                    $contextActivities = $contextActivities->withAddedCategoryActivity($categoryActivity->getModel());
-                }
+            foreach ($this->categoryActivities as $categoryActivity) {
+                $contextActivities = $contextActivities->withAddedCategoryActivity($categoryActivity->getModel());
             }
 
-            if (null !== $this->otherActivities) {
-                foreach ($this->otherActivities as $otherActivity) {
-                    $contextActivities = $contextActivities->withAddedOtherActivity($otherActivity->getModel());
-                }
+            foreach ($this->otherActivities as $otherActivity) {
+                $contextActivities = $contextActivities->withAddedOtherActivity($otherActivity->getModel());
             }
 
             $context = $context->withContextActivities($contextActivities);

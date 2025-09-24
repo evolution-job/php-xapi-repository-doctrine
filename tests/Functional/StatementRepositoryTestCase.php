@@ -13,7 +13,8 @@ namespace XApi\Repository\Doctrine\Tests\Functional;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
-use XApi\Repository\Api\Tests\Functional\StatementRepositoryTest as BaseStatementRepositoryTest;
+use Override;
+use XApi\Repository\Api\Tests\Functional\StatementRepositoryTestCase as BaseStatementRepositoryTestCase;
 use XApi\Repository\Doctrine\Repository\Mapping\StatementRepository as MappedStatementRepository;
 use XApi\Repository\Doctrine\Repository\StatementRepository;
 use XApi\Repository\Doctrine\Tests\StatementRepository as FreshStatementRepository;
@@ -21,12 +22,13 @@ use XApi\Repository\Doctrine\Tests\StatementRepository as FreshStatementReposito
 /**
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-abstract class StatementRepositoryTest extends BaseStatementRepositoryTest
+abstract class StatementRepositoryTestCase extends BaseStatementRepositoryTestCase
 {
     protected ObjectManager $objectManager;
 
     protected ObjectRepository|MappedStatementRepository $repository;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->objectManager = $this->createObjectManager();

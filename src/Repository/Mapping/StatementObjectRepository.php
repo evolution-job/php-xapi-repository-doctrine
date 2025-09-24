@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace XApi\Repository\Doctrine\Storage;
+namespace XApi\Repository\Doctrine\Repository\Mapping;
 
 use XApi\Repository\Doctrine\Mapping\StatementObject;
 
@@ -18,11 +18,12 @@ use XApi\Repository\Doctrine\Mapping\StatementObject;
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
-interface StatementObjectStorage
+interface StatementObjectRepository
 {
     /**
-     * @return StatementObject The object or null if no matching object
+     * @param array $criteria
+     * @return StatementObject|null The object or null if no matching object
      *                         has been found
      */
-    public function findObject(array $criteria);
+    public function findObject(array $criteria): ?StatementObject;
 }

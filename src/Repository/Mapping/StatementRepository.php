@@ -21,10 +21,11 @@ use XApi\Repository\Doctrine\Mapping\Statement;
 interface StatementRepository
 {
     /**
-     * @return Statement The statement or null if no matching statement
+     * @param array $criteria
+     * @return Statement|null The statement or null if no matching statement
      *                   has been found
      */
-    public function findStatement(array $criteria);
+    public function findStatement(array $criteria): ?Statement;
 
     /**
      * @return Statement[] The statements matching the given criteria
@@ -35,8 +36,8 @@ interface StatementRepository
      * Saves a {@link Statement} in the underlying storage.
      *
      * @param Statement $statement The statement being stored
-     * @param bool      $flush     Whether or not to flush the managed objects
+     * @param bool $flush Whether or not to flush the managed objects
      *                             (i.e. write them to the data storage immediately)
      */
-    public function storeStatement(Statement $statement, bool $flush = true);
+    public function storeStatement(Statement $statement, bool $flush = true): void;
 }

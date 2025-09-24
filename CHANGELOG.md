@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+0.6.0
+-----
+
+* dropped support for PHP < 8.4
+* dropped < `3.x` releases of the `php-xapi/model` package
+
+
 0.5.0
 -----
 

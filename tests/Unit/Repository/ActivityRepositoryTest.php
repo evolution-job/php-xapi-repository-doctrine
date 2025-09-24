@@ -19,14 +19,14 @@ use Xabbuh\XApi\DataFixtures\ActorFixtures;
 use Xabbuh\XApi\Model\IRI;
 use XApi\Repository\Doctrine\Mapping\StatementObject;
 use XApi\Repository\Doctrine\Repository\ActivityRepository;
-use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
+use XApi\Repository\Doctrine\Repository\Mapping\StatementObjectRepository;
 
 /**
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
 class ActivityRepositoryTest extends TestCase
 {
-    private MockObject|StatementObjectStorage $objectStorage;
+    private MockObject $objectStorage;
 
     private ActivityRepository $activityRepository;
 
@@ -80,10 +80,8 @@ class ActivityRepositoryTest extends TestCase
         $this->activityRepository->findActivityById($iri);
     }
 
-    protected function createObjectStorageMock(): MockObject
+    protected function createObjectStorageMock(): MockObject|StatementObjectRepository
     {
-        return $this
-            ->getMockBuilder(StatementObjectStorage::class)
-            ->getMock();
+        return $this->createMock(StatementObjectRepository::class);
     }
 }

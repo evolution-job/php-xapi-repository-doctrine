@@ -16,27 +16,24 @@ use Xabbuh\XApi\Model\Activity;
 use Xabbuh\XApi\Model\IRI;
 use XApi\Repository\Api\ActivityRepositoryInterface;
 use XApi\Repository\Doctrine\Mapping\StatementObject;
-use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
 
 /**
  * Doctrine based {@link Activity} repository.
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
-final class ActivityRepository implements ActivityRepositoryInterface
+final class ActivityRepository extends StatementObjectRepository implements ActivityRepositoryInterface
 {
-    public function __construct(private readonly StatementObjectStorage $statementObjectStorage) { }
-
     /**
      * {@inheritdoc}
      */
-    public function findActivityById(IRI $iri): Activity
+    public function findActivityById(IRI $iri): ?Activity
     {
         $criteria = ['type' => StatementObject::TYPE_ACTIVITY, 'activityId' => $iri->getValue()];
 
-        $statementObject = $this->statementObjectStorage->findObject($criteria);
+        $statementObject = $this->statementObjectRepository->findObject($criteria);
 
-        if (null === $statementObject) {
+        if (!$statementObject instanceof StatementObject) {
             throw new NotFoundException(sprintf('No activity could be found matching the ID "%s".', $iri->getValue()));
         }
 

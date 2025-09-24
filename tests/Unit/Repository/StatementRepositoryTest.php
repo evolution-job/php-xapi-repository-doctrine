@@ -54,17 +54,19 @@ class StatementRepositoryTest extends TestCase
 
         $statementsFilter = new StatementsFilter();
         $statementsFilter->byVerb($verb);
-        
+
         $this->statementRepository->findStatementsBy($statementsFilter);
     }
 
     public function testSave(): void
     {
         $statement = StatementFixtures::getMinimalStatement();
-        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement) : bool {
+
+        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement): bool {
             $expected = MappedStatement::fromModel($statement);
             $actual = clone $mappedStatement;
             $actual->stored = null;
+
             return $expected == $actual;
         }), true);
 
@@ -74,10 +76,12 @@ class StatementRepositoryTest extends TestCase
     public function testSaveWithoutFlush(): void
     {
         $statement = StatementFixtures::getMinimalStatement();
-        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement) : bool {
+
+        $this->mappedStatementRepository->expects($this->once())->method('storeStatement')->with($this->callback(static function (MappedStatement $mappedStatement) use ($statement): bool {
             $expected = MappedStatement::fromModel($statement);
             $actual = clone $mappedStatement;
             $actual->stored = null;
+
             return $expected == $actual;
         }), false);
 
@@ -86,6 +90,6 @@ class StatementRepositoryTest extends TestCase
 
     protected function createMappedStatementRepositoryMock(): MappedStatementRepository|MockObject
     {
-        return $this->getMockBuilder(MappedStatementRepository::class)->getMock();
+        return $this->createMock(MappedStatementRepository::class);
     }
 }

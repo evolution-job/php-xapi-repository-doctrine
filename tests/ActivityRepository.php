@@ -21,9 +21,9 @@ use XApi\Repository\Api\ActivityRepositoryInterface;
  *
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
-final class ActivityRepository implements ActivityRepositoryInterface
+final readonly class ActivityRepository implements ActivityRepositoryInterface
 {
-    public function __construct(private readonly ActivityRepositoryInterface $activityRepository, private readonly ObjectManager $objectManager)
+    public function __construct(private ActivityRepositoryInterface $activityRepository, private ObjectManager $objectManager)
     {
     }
 
