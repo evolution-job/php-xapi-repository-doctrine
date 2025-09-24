@@ -21,16 +21,17 @@ use XApi\Repository\Doctrine\Mapping\State;
 interface StateRepository
 {
     /**
-     * @return State The state or null if no matching state has been found
+     * @param array $criteria
+     * @return State|null The state or null if no matching state has been found
      */
-    public function findState(array $criteria);
+    public function findState(array $criteria): ?State;
 
     /**
      * Saves a {@link State} in the underlying storage.
      *
      * @param State $state The state being stored
-     * @param bool  $flush Whether or not to flush the managed objects
+     * @param bool $flush Whether or not to flush the managed objects
      *                     (i.e. write them to the data storage immediately)
      */
-    public function storeState(State $state, bool $flush = true);
+    public function storeState(State $state, bool $flush = true): void;
 }
