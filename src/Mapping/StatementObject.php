@@ -32,15 +32,15 @@ use Xabbuh\XApi\Model\SubStatement;
  */
 class StatementObject
 {
-    public const TYPE_ACTIVITY = 'activity';
-    
-    public const TYPE_AGENT = 'agent';
-    
-    public const TYPE_GROUP = 'group';
-    
-    public const TYPE_STATEMENT_REFERENCE = 'statement_reference';
-    
-    public const TYPE_SUB_STATEMENT = 'sub_statement';
+    public const string TYPE_ACTIVITY = 'activity';
+
+    public const string TYPE_AGENT = 'agent';
+
+    public const string TYPE_GROUP = 'group';
+
+    public const string TYPE_STATEMENT_REFERENCE = 'statement_reference';
+
+    public const string TYPE_SUB_STATEMENT = 'sub_statement';
 
     public int $identifier;
 
@@ -79,7 +79,7 @@ class StatementObject
     /**
      * @var StatementObject[]
      */
-    public $members;
+    public mixed $members;
 
     public ?StatementObject $group = null;
 
