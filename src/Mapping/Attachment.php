@@ -23,7 +23,7 @@ class Attachment
 {
     public int $identifier;
 
-    public ?Statement $statement;
+    public ?Statement $statement = null;
 
     public string $usageType;
 

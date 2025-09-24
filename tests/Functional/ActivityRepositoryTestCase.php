@@ -13,8 +13,9 @@ namespace XApi\Repository\Doctrine\Tests\Functional;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use Override;
 use Xabbuh\XApi\Model\IRI;
-use XApi\Repository\Api\Tests\Functional\ActivityRepositoryTest as BaseActivityRepositoryTest;
+use XApi\Repository\Api\Tests\Functional\ActivityRepositoryTestCase as BaseActivityRepositoryTestCase;
 use XApi\Repository\Doctrine\Repository\ActivityRepository;
 use XApi\Repository\Doctrine\Storage\StatementObjectStorage;
 use XApi\Repository\Doctrine\Tests\ActivityRepository as FreshActivityRepository;
@@ -22,12 +23,13 @@ use XApi\Repository\Doctrine\Tests\ActivityRepository as FreshActivityRepository
 /**
  * @author Jérôme Parmentier <jerome.parmentier@acensi.fr>
  */
-abstract class ActivityRepositoryTest extends BaseActivityRepositoryTest
+abstract class ActivityRepositoryTestCase extends BaseActivityRepositoryTestCase
 {
     protected ObjectManager $objectManager;
 
     protected ObjectRepository|StatementObjectStorage $storage;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->objectManager = $this->createObjectManager();

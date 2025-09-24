@@ -22,7 +22,7 @@ class Extensions
 {
     public int $identifier;
 
-    public $extensions;
+    public mixed $extensions;
 
     public static function fromModel(ExtensionsModel $extensionsModel): self
     {

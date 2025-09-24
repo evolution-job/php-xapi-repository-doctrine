@@ -24,24 +24,24 @@ use XApi\Repository\Api\StatementRepositoryInterface;
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-final class StatementRepository implements StatementRepositoryInterface
+final readonly class StatementRepository implements StatementRepositoryInterface
 {
-    
-    private readonly ObjectManager $objectManager;
 
-    public function __construct(private readonly StatementRepositoryInterface $statementRepository, $objectManager)
+    private ObjectManager $objectManager;
+
+    public function __construct(private StatementRepositoryInterface $statementRepository, $objectManager)
     {
         if (!$objectManager instanceof ObjectManager) {
             throw new TypeError(sprintf('The second argument of %s() must be an instance of %s (%s given).', __METHOD__, ObjectManager::class, get_debug_type($objectManager)));
         }
-        
+
         $this->objectManager = $objectManager;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findStatementById(StatementId $statementId, Actor $actor = null): Statement
+    public function findStatementById(StatementId $statementId, ?Actor $actor = null): Statement
     {
         $statement = $this->statementRepository->findStatementById($statementId, $actor);
         $this->objectManager->clear();
@@ -52,7 +52,7 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findVoidedStatementById(StatementId $voidedStatementId, Actor $actor = null): Statement
+    public function findVoidedStatementById(StatementId $voidedStatementId, ?Actor $actor = null): Statement
     {
         $statement = $this->statementRepository->findVoidedStatementById($voidedStatementId, $actor);
         $this->objectManager->clear();
@@ -63,7 +63,7 @@ final class StatementRepository implements StatementRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findStatementsBy(StatementsFilter $statementsFilter, Actor $actor = null): array
+    public function findStatementsBy(StatementsFilter $statementsFilter, ?Actor $actor = null): array
     {
         $statements = $this->statementRepository->findStatementsBy($statementsFilter, $actor);
         $this->objectManager->clear();
