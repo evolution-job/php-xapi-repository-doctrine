@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,12 +10,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace XApi\Repository\Doctrine\Tests\Functional;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
-use Override;
 use XApi\Repository\Api\Tests\Functional\StateRepositoryTestCase as BaseStateRepositoryTestCase;
 use XApi\Repository\Doctrine\Repository\Mapping\StateRepository as MappedStateRepository;
 use XApi\Repository\Doctrine\Repository\StateRepository;
@@ -28,12 +28,10 @@ abstract class StateRepositoryTestCase extends BaseStateRepositoryTestCase
 
     protected ObjectRepository|MappedStateRepository $repository;
 
-    #[Override]
     protected function setUp(): void
     {
         $this->objectManager = $this->createObjectManager();
         $this->repository = $this->createRepository();
-
         parent::setUp();
     }
 

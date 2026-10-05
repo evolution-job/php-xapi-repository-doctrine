@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,7 +10,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace XApi\Repository\Doctrine\Tests;
 
 use DateTimeImmutable;
@@ -24,15 +25,11 @@ use XApi\Repository\Api\StateRepositoryInterface;
  */
 final readonly class StateRepository implements StateRepositoryInterface
 {
-    private ObjectManager $objectManager;
-
     public function __construct(private StateRepositoryInterface $stateRepository, $objectManager)
     {
         if (!$objectManager instanceof ObjectManager) {
             throw new TypeError(sprintf('The second argument of %s() must be an instance of %s (%s given).', __METHOD__, ObjectManager::class, get_debug_type($objectManager)));
         }
-
-        $this->objectManager = $objectManager;
     }
 
     public function findState(State $state): ?State

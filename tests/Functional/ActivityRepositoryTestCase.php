@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,12 +10,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace XApi\Repository\Doctrine\Tests\Functional;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
-use Override;
 use Xabbuh\XApi\Model\IRI;
 use XApi\Repository\Api\Tests\Functional\ActivityRepositoryTestCase as BaseActivityRepositoryTestCase;
 use XApi\Repository\Doctrine\Repository\ActivityRepository;
@@ -29,12 +29,10 @@ abstract class ActivityRepositoryTestCase extends BaseActivityRepositoryTestCase
 
     protected ObjectRepository|StatementObjectRepository $storage;
 
-    #[Override]
     protected function setUp(): void
     {
         $this->objectManager = $this->createObjectManager();
         $this->storage = $this->createStorage();
-
         parent::setUp();
     }
 

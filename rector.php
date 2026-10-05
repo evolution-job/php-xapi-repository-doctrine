@@ -23,9 +23,7 @@ return RectorConfig::configure()
         SetList::DEAD_CODE,
         SetList::EARLY_RETURN,
         SetList::INSTANCEOF,
-        SetList::STRICT_BOOLEANS,
         SetList::TYPE_DECLARATION,
-        PHPUnitSetList::PHPUNIT_110,
         PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     ]);
 

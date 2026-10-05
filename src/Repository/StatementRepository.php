@@ -46,7 +46,7 @@ final readonly class StatementRepository implements StatementRepositoryInterface
 
         $statement = $mappedStatement?->getModel();
 
-        if (null === $statement || $statement?->isVoidStatement()) {
+        if (!$statement instanceof Statement || $statement?->isVoidStatement()) {
             throw new NotFoundException('The stored statement is a voiding statement.');
         }
 

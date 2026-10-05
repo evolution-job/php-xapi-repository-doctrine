@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace XApi\Repository\Doctrine\Tests\Unit\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -25,7 +24,7 @@ use XApi\Repository\Doctrine\Repository\StatementRepository;
 /**
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
  */
-class StatementRepositoryTest extends TestCase
+final class StatementRepositoryTest extends TestCase
 {
     private MockObject|MappedStatementRepository $mappedStatementRepository;
 
@@ -67,7 +66,9 @@ class StatementRepositoryTest extends TestCase
             $actual = clone $mappedStatement;
             $actual->stored = null;
 
-            return $expected == $actual;
+            self::assertEquals($actual, $expected);
+
+            return true;
         }), true);
 
         $this->statementRepository->storeStatement($statement);
@@ -82,7 +83,9 @@ class StatementRepositoryTest extends TestCase
             $actual = clone $mappedStatement;
             $actual->stored = null;
 
-            return $expected == $actual;
+            self::assertEquals($actual, $expected);
+
+            return true;
         }), false);
 
         $this->statementRepository->storeStatement($statement, false);

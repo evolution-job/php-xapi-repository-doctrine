@@ -34,7 +34,6 @@ final readonly class StateRepository implements StateRepositoryInterface
     }
 
     /**
-     * @param State $state
      * @return array States if no matching states have been found
      */
     public function findStates(State $state, ?DateTimeImmutable $since = null): array

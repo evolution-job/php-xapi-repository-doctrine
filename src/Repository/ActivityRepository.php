@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the xAPI package.
  *
@@ -8,7 +10,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace XApi\Repository\Doctrine\Repository;
 
 use Xabbuh\XApi\Common\Exception\NotFoundException;
@@ -27,7 +28,7 @@ final class ActivityRepository extends StatementObjectRepository implements Acti
     /**
      * {@inheritdoc}
      */
-    public function findActivityById(IRI $iri): ?Activity
+    public function findActivityById(IRI $iri): Activity
     {
         $criteria = ['type' => StatementObject::TYPE_ACTIVITY, 'activityId' => $iri->getValue()];
 
