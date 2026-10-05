@@ -35,7 +35,7 @@ final class VerbRepositoryTest extends TestCase
     public function testItThrowsWhenTheVerbDoesNotExist(): void
     {
         $this->expectException(NotFoundException::class);
-        $repository = $this->createMock(MappedVerbRepository::class);
+        $repository = $this->createStub(MappedVerbRepository::class);
         $repository->method('findVerb')->willReturn(null);
 
         (new VerbRepository($repository))->findVerbById(VerbFixtures::getTypicalVerb()->getId());

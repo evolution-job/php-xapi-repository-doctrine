@@ -36,7 +36,7 @@ final class ProfileRepositoryTest extends TestCase
     {
         $mappedRepository = $this->createMock(MappedProfileRepository::class);
         $document = new ProfileDocument('{}', 'application/json', new DateTimeImmutable('2024-01-01T00:00:00+00:00'));
-        $mappedRepository->method('findProfile')->with('activity:https://example.org/activity', 'resume')->willReturn(Profile::fromModel('activity:https://example.org/activity', 'resume', $document));
+        $mappedRepository->expects($this->once())->method('findProfile')->with('activity:https://example.org/activity', 'resume')->willReturn(Profile::fromModel('activity:https://example.org/activity', 'resume', $document));
 
         self::assertEquals($document, (new ProfileRepository($mappedRepository))->find('activity:https://example.org/activity', 'resume'));
     }
