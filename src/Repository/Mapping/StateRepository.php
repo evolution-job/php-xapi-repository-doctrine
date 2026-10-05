@@ -11,6 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Repository\Mapping;
 
+use DateTimeImmutable;
 use XApi\Repository\Doctrine\Mapping\State;
 
 /**
@@ -28,9 +29,10 @@ interface StateRepository
 
     /**
      * @param State $state
+     * @param DateTimeImmutable|null $since Return only States modified strictly after this timestamp
      * @return array States have been found
      */
-    public function findStates(State $state): array;
+    public function findStates(State $state, ?DateTimeImmutable $since = null): array;
 
     /**
      * @param State $state

@@ -11,6 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Tests;
 
+use DateTimeImmutable;
 use Doctrine\Persistence\ObjectManager;
 use TypeError;
 use Xabbuh\XApi\Model\State;
@@ -39,9 +40,9 @@ final readonly class StateRepository implements StateRepositoryInterface
         return $this->stateRepository->findState($state);
     }
 
-    public function findStates(State $state): array
+    public function findStates(State $state, ?DateTimeImmutable $since = null): array
     {
-        return $this->stateRepository->findStates($state);
+        return $this->stateRepository->findStates($state, $since);
     }
 
     public function removeState(State $state, bool $flush = true): void

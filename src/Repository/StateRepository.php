@@ -11,6 +11,7 @@
 
 namespace XApi\Repository\Doctrine\Repository;
 
+use DateTimeImmutable;
 use Xabbuh\XApi\Model\State;
 use XApi\Repository\Api\StateRepositoryInterface;
 use XApi\Repository\Doctrine\Mapping\State as MappedState;
@@ -36,11 +37,11 @@ final readonly class StateRepository implements StateRepositoryInterface
      * @param State $state
      * @return array States if no matching states have been found
      */
-    public function findStates(State $state): array
+    public function findStates(State $state, ?DateTimeImmutable $since = null): array
     {
         $mappedState = MappedState::fromModel($state);
 
-        $states = $this->baseStateRepository->findStates($mappedState);
+        $states = $this->baseStateRepository->findStates($mappedState, $since);
 
         $modelStates = [];
         foreach ($states as $foundState) {
