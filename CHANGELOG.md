@@ -4,6 +4,7 @@ CHANGELOG
 0.7.0
 -----
 
+* add a Doctrine adapter for the Profile repository API
 * pass the optional State `since` filter through the Doctrine adapter
 * map State document Content-Type between model and persistence
 
